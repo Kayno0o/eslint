@@ -7,5 +7,4 @@ export default defineConfig({
   minify: true,
   sourcemap: true,
   splitting: false,
-  external: ['dayjs', 'ansi-colors'],
 })
