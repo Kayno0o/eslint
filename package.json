@@ -1,6 +1,9 @@
 {
   "name": "@kaynooo/eslint",
   "type": "module",
+  "version": "1.0.0",
+  "author": "Kaynooo <https://github.com/Kayno0o>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kayno0o/eslint.git"
