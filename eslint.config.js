@@ -1,3 +1,4 @@
-import eslint from './index.js'
+// eslint-disable-next-line antfu/no-import-dist
+import { typescript } from './dist/index.js'
 
-export default eslint.typescript
+export default typescript

@@ -26,17 +26,22 @@
     "lint:fix": "eslint . --fix",
     "lint": "eslint ."
   },
-  "peerDependencies": {},
-  "dependencies": {
-    "@antfu/eslint-config": "^4.2.0",
-    "@kaynooo/eslint": "^1.0.0",
-    "eslint": "^9.20.1",
+  "peerDependencies": {
+    "@antfu/eslint-config": "^4.11.0",
+    "eslint": "^9.23.0",
     "eslint-plugin-format": "^1.0.1",
-    "eslint-plugin-github": "^5.1.8"
+    "eslint-plugin-github": "^6.0.0"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "^4.11.0",
+    "@kaynooo/eslint": "^1.0.1",
+    "eslint": "^9.23.0",
+    "eslint-plugin-format": "^1.0.1",
+    "eslint-plugin-github": "^6.0.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.2",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
+    "@types/bun": "^1.2.8",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
   }
 }
