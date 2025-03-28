@@ -85,4 +85,5 @@ export const vue = antfu({
 
 export default {
   typescript,
+  vue,
 }
