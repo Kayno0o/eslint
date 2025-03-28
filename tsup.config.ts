@@ -2,9 +2,10 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   clean: true,
-  entry: ['./index.js'],
-  format: ['cjs', 'esm'],
+  entry: ['./index.ts'],
+  format: ['esm'],
   minify: true,
   sourcemap: false,
   splitting: false,
+  shims: true,
 })

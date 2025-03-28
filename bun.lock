@@ -4,15 +4,16 @@
     "": {
       "name": "eslint",
       "dependencies": {
-        "@antfu/eslint-config": "latest",
-        "eslint": "latest",
-        "eslint-plugin-format": "latest",
-        "eslint-plugin-github": "latest",
+        "@antfu/eslint-config": "^4.2.0",
+        "@kaynooo/eslint": "^1.0.0",
+        "eslint": "^9.20.1",
+        "eslint-plugin-format": "^1.0.1",
+        "eslint-plugin-github": "^5.1.8",
       },
       "devDependencies": {
-        "@types/bun": "latest",
-        "tsup": "latest",
-        "typescript": "latest",
+        "@types/bun": "^1.2.2",
+        "tsup": "^8.3.6",
+        "typescript": "^5.7.3",
       },
     },
   },
@@ -136,6 +137,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@kaynooo/eslint": ["@kaynooo/eslint@1.0.0", "", { "dependencies": { "@antfu/eslint-config": "^4.2.0", "eslint": "^9.20.1", "eslint-plugin-format": "^1.0.1", "eslint-plugin-github": "^5.1.8" } }, "sha512-pduZqYudzRwKERf7tD2gubTMH/bjxSh58k82fcmg713NH3H/wYPhlNxyy0xwrUneuIY7UpXlzY0Qg7AEAZfT0A=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 

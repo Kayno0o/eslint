@@ -11,11 +11,15 @@
   "bugs": {
     "url": "https://github.com/Kayno0o/eslint/issues"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": "./bin/index.js",
   "files": [
-    "./dist"
+    "bin",
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
@@ -25,6 +29,7 @@
   "peerDependencies": {},
   "dependencies": {
     "@antfu/eslint-config": "^4.2.0",
+    "@kaynooo/eslint": "^1.0.0",
     "eslint": "^9.20.1",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-github": "^5.1.8"
