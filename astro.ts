@@ -15,3 +15,5 @@ export const astro = antfu({
     'no-console': 'off',
   },
 })
+
+export default astro

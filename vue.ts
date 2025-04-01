@@ -12,3 +12,5 @@ export const vue = antfu({
     'vue/max-attributes-per-line': ['error', { multiline: { max: 1 }, singleline: { max: 3 } }],
   },
 })
+
+export default vue

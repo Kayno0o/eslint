@@ -11,3 +11,5 @@ export const typescript = antfu({
     'no-console': 'off',
   },
 })
+
+export default typescript
