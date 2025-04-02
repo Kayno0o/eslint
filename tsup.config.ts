@@ -6,7 +6,5 @@ export default defineConfig({
   format: ['esm'],
   minify: true,
   sourcemap: false,
-  splitting: false,
-  shims: false,
   dts: true,
 })
