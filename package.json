@@ -49,13 +49,13 @@
   },
   "dependencies": {
     "@antfu/eslint-config": "^4.11.0",
-    "@kaynooo/eslint": "^1.0.2",
     "eslint": "^9.23.0",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-github": "^6.0.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.8",
+    "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2"
   }
