@@ -15,18 +15,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./typescript": {
-      "types": "./dist/typescript.d.ts",
-      "import": "./dist/typescript.js"
-    },
-    "./astro": {
-      "types": "./dist/astro.d.ts",
-      "import": "./dist/astro.js"
-    },
-    "./vue": {
-      "types": "./dist/vue.d.ts",
-      "import": "./dist/vue.js"
     }
   },
   "main": "./dist/index.js",
