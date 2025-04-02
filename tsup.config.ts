@@ -9,4 +9,5 @@ export default defineConfig({
   splitting: false,
   shims: true,
   dts: true,
+  bundle: false,
 })
