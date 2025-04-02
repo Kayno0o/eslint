@@ -5,7 +5,7 @@ import { commonRules } from './index.ts'
 export const vue = antfu({
   plugins: { github },
   typescript: true,
-  vue: true,
+  vue: { a11y: true, vueVersion: 3 },
   formatters: { css: true },
   rules: {
     ...commonRules,
