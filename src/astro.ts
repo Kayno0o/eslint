@@ -15,8 +15,9 @@ export function astro(...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatC
     jsx: true,
     rules: {
       ...commonRules,
-      'antfu/no-top-level-await': 'off',
-      'no-console': 'off',
+      'style/indent': ['error', 2],
+      'style/jsx-indent': 'off',
+      'style/jsx-one-expression-per-line': 'off',
     },
   }, ...userConfigs)
 }

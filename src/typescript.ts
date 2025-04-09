@@ -11,8 +11,6 @@ export function typescript(...userConfigs: Awaitable<TypedFlatConfigItem | Typed
     typescript: true,
     rules: {
       ...commonRules,
-      'antfu/no-top-level-await': 'off',
-      'no-console': 'off',
     },
   }, ...userConfigs)
 }
