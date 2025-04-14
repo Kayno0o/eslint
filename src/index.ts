@@ -8,6 +8,7 @@ export const commonRules: Linter.RulesRecord = {
   'new-cap': ['error'],
   'no-console': 'off',
   'no-else-return': ['error', { allowElseIf: false }],
+  'no-lonely-if': ['error'],
   'no-empty-function': 'off',
   'no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
   'node/prefer-global/process': 'off',
