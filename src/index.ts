@@ -2,15 +2,16 @@ import type { Linter } from 'eslint'
 
 export const commonRules: Linter.RulesRecord = {
   'antfu/no-top-level-await': 'off',
+  'camelcase': ['error', { ignoreDestructuring: true, ignoreGlobals: true, ignoreImports: true }],
   'github/array-foreach': 'error',
   'github/no-then': 'error',
   'logical-assignment-operators': ['error', 'always', { enforceForIfStatements: true }],
   'new-cap': ['error'],
   'no-console': 'off',
   'no-else-return': ['error', { allowElseIf: false }],
-  'no-lonely-if': ['error'],
   'no-empty-function': 'off',
   'no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
+  'no-lonely-if': ['error'],
   'node/prefer-global/process': 'off',
   'operator-assignment': ['error', 'always'],
   'style/array-bracket-newline': ['warn', 'consistent'],
