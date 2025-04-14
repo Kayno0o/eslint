@@ -24,9 +24,9 @@ export function vue(options?: {
       'vue/static-class-names-order': 'error',
       // false positive
       'vue-a11y/label-has-for': 'off',
-      ...(options?.i18n && {
+      ...((options?.i18n && {
         'vue/no-bare-strings-in-template': 'error',
-      } || {}),
+      }) || {}),
     },
   }, ...userConfigs)
 }
