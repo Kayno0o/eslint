@@ -1,4 +1,4 @@
-import type { Awaitable, TypedFlatConfigItem } from '@antfu/eslint-config'
+import type { Awaitable, OptionsFormatters, TypedFlatConfigItem } from '@antfu/eslint-config'
 import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
@@ -7,12 +7,14 @@ import { commonRules } from '~'
 
 export function vue(options?: {
   i18n?: boolean
+  formatters?: OptionsFormatters
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu({
     plugins: { github },
     typescript: true,
+    //
     vue: { a11y: true, vueVersion: 3 },
-    formatters: { css: true },
+    formatters: { css: true, ...(options?.formatters ?? {}) },
     rules: {
       ...commonRules,
       'vue/max-attributes-per-line': ['error', { multiline: { max: 1 }, singleline: { max: 3 } }],
