@@ -36,10 +36,6 @@
     "eslint-plugin-github": "^6.0.0"
   },
   "dependencies": {
-    "@antfu/eslint-config": "^4.11.0",
-    "eslint": "^9.23.0",
-    "eslint-plugin-format": "^1.0.1",
-    "eslint-plugin-github": "^6.0.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.8",
