@@ -1,4 +1,4 @@
-import type { Awaitable, OptionsFormatters, TypedFlatConfigItem } from '@antfu/eslint-config'
+import type { Awaitable, OptionsConfig, OptionsFormatters, TypedFlatConfigItem } from '@antfu/eslint-config'
 import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
@@ -7,6 +7,7 @@ import { commonRules } from '~'
 
 export function typescript(options?: {
   formatters?: OptionsFormatters
+  overrideOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu({
     plugins: { github },
@@ -14,6 +15,7 @@ export function typescript(options?: {
     typescript: true,
     //
     rules: commonRules,
+    ...options?.overrideOptions,
   }, ...userConfigs)
 }
 
