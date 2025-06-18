@@ -2,6 +2,7 @@ import type { Awaitable, OptionsConfig, OptionsFormatters, TypedFlatConfigItem }
 import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
 import { commonRules } from '~'
@@ -12,7 +13,7 @@ export function vue(options?: {
   mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
-    plugins: { github },
+    plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
     typescript: true,
     //
     vue: { a11y: true, vueVersion: 3 },
@@ -26,11 +27,13 @@ export function vue(options?: {
       'vue/object-curly-newline': ['warn', { consistent: true, multiline: true }],
       'vue/no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
       'vue/static-class-names-order': 'error',
-      // false positive
-      'vue-a11y/label-has-for': 'off',
+      'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
+      ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
       ...((options?.i18n && {
         'vue/no-bare-strings-in-template': 'error',
       }) || {}),
+      // false positive
+      'vue-a11y/label-has-for': 'off',
     },
   }, options?.mergeOptions), ...userConfigs)
 }
