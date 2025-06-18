@@ -9,7 +9,7 @@ import { commonRules } from '~'
 export function vue(options?: {
   i18n?: boolean
   formatters?: OptionsFormatters
-  overrideOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
+  mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
     plugins: { github },
@@ -32,7 +32,7 @@ export function vue(options?: {
         'vue/no-bare-strings-in-template': 'error',
       }) || {}),
     },
-  }, options?.overrideOptions), ...userConfigs)
+  }, options?.mergeOptions), ...userConfigs)
 }
 
 export default vue

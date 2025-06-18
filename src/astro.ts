@@ -8,7 +8,7 @@ import { commonRules } from '~'
 
 export function astro(options?: {
   formatters?: OptionsFormatters
-  overrideOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
+  mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
     plugins: { github },
@@ -23,7 +23,7 @@ export function astro(options?: {
       'style/jsx-indent': 'off',
       'style/jsx-one-expression-per-line': 'off',
     },
-  }, options?.overrideOptions), ...userConfigs)
+  }, options?.mergeOptions), ...userConfigs)
 }
 
 export default astro
