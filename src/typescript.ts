@@ -8,7 +8,7 @@ import { commonRules } from '~'
 
 export function typescript(options?: {
   formatters?: OptionsFormatters
-  overrideOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
+  mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
     plugins: { github },
@@ -16,7 +16,7 @@ export function typescript(options?: {
     typescript: true,
     //
     rules: commonRules,
-  }, options?.overrideOptions), ...userConfigs)
+  }, options?.mergeOptions), ...userConfigs)
 }
 
 export default typescript
