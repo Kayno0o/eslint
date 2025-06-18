@@ -3,7 +3,6 @@ import type { Linter } from 'eslint'
 
 export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'antfu/no-top-level-await': 'off',
-  'camelcase': ['error', { ignoreDestructuring: true, ignoreGlobals: true, ignoreImports: true }],
   'github/array-foreach': 'error',
   'github/no-then': 'error',
   'logical-assignment-operators': ['error', 'always', { enforceForIfStatements: true }],
