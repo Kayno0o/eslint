@@ -3,6 +3,7 @@ import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import github from 'eslint-plugin-github'
+import _ from 'lodash'
 import { commonRules } from '~'
 
 export function vue(options?: {
@@ -10,7 +11,7 @@ export function vue(options?: {
   formatters?: OptionsFormatters
   overrideOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
-  return antfu({
+  return antfu(_.merge({
     plugins: { github },
     typescript: true,
     //
@@ -31,8 +32,7 @@ export function vue(options?: {
         'vue/no-bare-strings-in-template': 'error',
       }) || {}),
     },
-    ...options?.overrideOptions,
-  }, ...userConfigs)
+  }, options?.overrideOptions), ...userConfigs)
 }
 
 export default vue

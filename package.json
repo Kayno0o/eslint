@@ -35,9 +35,12 @@
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-github": "^6.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": ""
+  },
   "devDependencies": {
     "@types/bun": "^1.2.8",
+    "@types/lodash": "",
     "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2"
