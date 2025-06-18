@@ -17,6 +17,7 @@ export function astro(options?: {
     //
     formatters: { css: true, ...(options?.formatters ?? {}) },
     astro: true,
+    jsx: false,
     rules: {
       ...commonRules,
       'style/indent': ['error', 2],
