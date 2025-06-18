@@ -27,13 +27,15 @@ export function vue(options?: {
       'vue/object-curly-newline': ['warn', { consistent: true, multiline: true }],
       'vue/no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
       'vue/static-class-names-order': 'error',
-      'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
-      ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
       ...((options?.i18n && {
         'vue/no-bare-strings-in-template': 'error',
       }) || {}),
       // false positive
       'vue-a11y/label-has-for': 'off',
+      // tailwindcss 4
+      ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
+      'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
+      'better-tailwindcss/multiline': ['warn', { printWidth: 0 }],
     },
   }, options?.mergeOptions), ...userConfigs)
 }
