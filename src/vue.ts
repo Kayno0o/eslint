@@ -27,9 +27,9 @@ export function vue(options?: {
       'vue/object-curly-newline': ['warn', { consistent: true, multiline: true }],
       'vue/no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
       'vue/static-class-names-order': 'error',
-      ...((options?.i18n && {
+      ...(options?.i18n && {
         'vue/no-bare-strings-in-template': 'error',
-      }) || {}),
+      }),
       // false positive
       'vue-a11y/label-has-for': 'off',
       // tailwindcss 4
