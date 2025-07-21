@@ -35,7 +35,8 @@ export function vue(options?: {
       // tailwindcss 4
       ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
       'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
-      'better-tailwindcss/multiline': ['warn', { printWidth: 0 }],
+      'better-tailwindcss/enforce-consistent-line-wrapping': ['warn', { group: 'newLine', printWidth: 120 }],
+      // : ['warn', { printWidth: 0, preferSingleLine: true }],
     },
   }, options?.mergeOptions), ...userConfigs)
 }
