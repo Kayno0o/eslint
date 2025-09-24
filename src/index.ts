@@ -36,7 +36,6 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'ts/prefer-namespace-keyword': 'error',
   'unicorn/no-new-array': 'off',
   'unused-imports/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
-  'curly': ['error', 'multi-or-nest'],
   'style/indent': ['error', 2, { CallExpression: { arguments: 'first' } }],
 }
 
