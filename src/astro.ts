@@ -14,12 +14,10 @@ export function astro(options?: {
   return antfu(_.merge({
     plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
     typescript: true,
-    //
     formatters: { css: true, ...(options?.formatters ?? {}) },
     astro: true,
     jsx: false,
-    rules: {
-      ...commonRules,
+    rules: _.merge(commonRules, {
       'style/indent': ['error', 2],
       'style/jsx-indent': 'off',
       'style/jsx-one-expression-per-line': 'off',
@@ -28,7 +26,7 @@ export function astro(options?: {
       'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
       'better-tailwindcss/enforce-consistent-line-wrapping': ['warn', { group: 'newLine', printWidth: 120 }],
       // : ['warn', { printWidth: 0, preferSingleLine: true }],
-    },
+    }),
     settings: {
       'better-tailwindcss': {
         entryPoint: 'src/styles/global.css',
