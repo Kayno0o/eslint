@@ -40,10 +40,6 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'style/indent': ['error', 2, { CallExpression: { arguments: 'first' } }],
 }
 
-export default {
-  commonRules,
-}
-
 export * from './astro'
 export * from './typescript'
 export * from './vue'
