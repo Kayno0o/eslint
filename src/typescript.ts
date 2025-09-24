@@ -14,7 +14,6 @@ export function typescript(options?: {
     plugins: { github },
     formatters: options?.formatters,
     typescript: true,
-    //
     rules: commonRules,
   }, options?.mergeOptions), ...userConfigs)
 }

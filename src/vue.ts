@@ -18,8 +18,7 @@ export function vue(options?: {
     //
     vue: { a11y: true, vueVersion: 3 },
     formatters: { css: true, ...(options?.formatters ?? {}) },
-    rules: {
-      ...commonRules,
+    rules: _.merge(commonRules, {
       'vue/max-attributes-per-line': ['error', { multiline: { max: 1 }, singleline: { max: 3 } }],
       'vue/html-button-has-type': 'error',
       'vue/array-bracket-newline': ['warn', 'consistent'],
@@ -37,7 +36,7 @@ export function vue(options?: {
       'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
       'better-tailwindcss/enforce-consistent-line-wrapping': ['warn', { group: 'newLine', printWidth: 120 }],
       // : ['warn', { printWidth: 0, preferSingleLine: true }],
-    },
+    }),
   }, options?.mergeOptions), ...userConfigs)
 }
 
