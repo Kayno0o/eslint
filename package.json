@@ -30,20 +30,20 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "@antfu/eslint-config": "^4.11.0",
-    "eslint": "^9.23.0",
-    "eslint-plugin-better-tailwindcss": "^3.3.0",
-    "eslint-plugin-format": "^1.0.1",
+    "@antfu/eslint-config": "^5.4.1",
+    "eslint": "^9.36.0",
+    "eslint-plugin-better-tailwindcss": "^3.7.9",
+    "eslint-plugin-format": "^1.0.2",
     "eslint-plugin-github": "^6.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.8",
-    "@types/lodash": "^4.17.18",
+    "@types/bun": "^1.2.22",
+    "@types/lodash": "^4.17.20",
     "eslint-plugin-vuejs-accessibility": "^2.4.1",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.2"
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
   }
 }
