@@ -40,10 +40,10 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.22",
+    "@types/bun": "^1.2.23",
     "@types/lodash": "^4.17.20",
     "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
