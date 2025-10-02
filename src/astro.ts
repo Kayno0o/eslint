@@ -7,14 +7,19 @@ import github from 'eslint-plugin-github'
 import _ from 'lodash'
 import { commonRules } from '~'
 
-export function astro(options?: {
+export function astro({
+  formatters,
+  tailwindcssMultiline = false,
+  mergeOptions,
+}: {
   formatters?: OptionsFormatters
+  tailwindcssMultiline?: boolean
   mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
-}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
+} = {}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
     plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
     typescript: true,
-    formatters: { css: true, ...(options?.formatters ?? {}) },
+    formatters: { css: true, ...(formatters ?? {}) },
     astro: true,
     jsx: false,
     rules: _.merge(commonRules, {
@@ -24,15 +29,16 @@ export function astro(options?: {
       // tw 4
       ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
       'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
-      'better-tailwindcss/enforce-consistent-line-wrapping': ['warn', { group: 'newLine', printWidth: 120 }],
-      // : ['warn', { printWidth: 0, preferSingleLine: true }],
+      'better-tailwindcss/enforce-consistent-line-wrapping': tailwindcssMultiline
+        ? ['warn', { group: 'newLine', printWidth: 120 }]
+        : ['warn', { printWidth: 0, preferSingleLine: true }],
     }),
     settings: {
       'better-tailwindcss': {
         entryPoint: 'src/styles/global.css',
       },
     },
-  }, options?.mergeOptions), ...userConfigs)
+  }, mergeOptions), ...userConfigs)
 }
 
 export default astro
