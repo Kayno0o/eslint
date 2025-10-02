@@ -9,6 +9,7 @@ import { commonRules } from '~'
 
 export function vue({
   i18n = false,
+  a11y = false,
   tailwindcss = undefined,
   tailwindcssConfigFile = 'tailwind.config.ts',
   tailwindcssEntryPoint = 'app/assets/css/main.css',
@@ -16,6 +17,7 @@ export function vue({
   tailwindcssMultiline = false,
 }: {
   i18n?: boolean
+  a11y?: boolean
   tailwindcss?: 3 | 4
   tailwindcssConfigFile?: string
   tailwindcssEntryPoint?: string
@@ -28,7 +30,7 @@ export function vue({
       ...(tailwindcss && { 'better-tailwindcss': eslintPluginTailwindCSS }),
     },
     typescript: true,
-    vue: { a11y: true, vueVersion: 3 },
+    vue: { a11y, vueVersion: 3 },
     formatters: { css: true },
     rules: {
       ...commonRules,
