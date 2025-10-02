@@ -21,11 +21,11 @@ export function astro({
     typescript: true,
     formatters: { css: true, ...(formatters ?? {}) },
     astro: true,
-    jsx: false,
+    jsx: true,
     rules: _.merge(commonRules, {
       'style/indent': ['error', 2],
-      'style/jsx-indent': 'off',
-      'style/jsx-one-expression-per-line': 'off',
+      // 'style/jsx-indent': 'off',
+      // 'style/jsx-one-expression-per-line': 'off',
       // tw 4
       ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
       'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
