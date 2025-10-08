@@ -10,6 +10,7 @@ const paddingAround: StatementArrayType = ['if', 'function', 'switch', 'while']
 
 const paddingGroups: StatementArrayType[] = [
   ['const', 'let'],
+  ['if'],
 ]
 
 export const commonRules: Partial<Linter.RulesRecord & Rules> = {
