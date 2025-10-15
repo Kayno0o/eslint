@@ -23,6 +23,9 @@ jobs:
         with:
           system-packages: wget
 
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
       - name: Build package files
         run: bun run build
 
