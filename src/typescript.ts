@@ -9,16 +9,28 @@ import { commonRules, typeAwareRules } from './index'
 export default async function typescript(options?: {
   formatters?: OptionsFormatters
   mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
+  strict?: boolean
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
-  return antfu(_.merge({
-    plugins: { github },
-    formatters: options?.formatters,
-    typescript: {
-      tsconfigPath: 'tsconfig.json',
-    },
-    rules: commonRules,
-  }, options?.mergeOptions), {
-    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
-    rules: typeAwareRules,
-  }, ...userConfigs)
+  return antfu(
+    _.merge(
+      {
+        plugins: { github },
+        formatters: options?.formatters,
+        typescript: options?.strict
+          ? {
+            tsconfigPath: 'tsconfig.json',
+          }
+          : true,
+        rules: commonRules,
+      },
+      options?.mergeOptions,
+    ),
+    options?.strict
+      ? {
+        files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
+        rules: typeAwareRules,
+      }
+      : {},
+    ...userConfigs,
+  )
 }
