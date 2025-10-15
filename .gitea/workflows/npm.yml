@@ -24,11 +24,22 @@ jobs:
       - name: Setup project
         uses: ./.gitea/actions/setup
 
+      - name: Configure git
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git config --global user.email "bot@gitea.local"
+          git config --global user.name "Gitea Bot"
+
       - name: Build package files
         run: bun run build
 
+      - name: Generate changelog
+        run: bun x changelogen@latest --release --no-commit --no-tag
+
       - name: Create Gitea release
         uses: akkuman/gitea-release-action@v1
+        with:
+          body_path: CHANGELOG.md
 
       - name: Configure npm for publishing
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
