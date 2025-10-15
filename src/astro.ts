@@ -5,9 +5,9 @@ import antfu from '@antfu/eslint-config'
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
-import { commonRules } from '~'
+import { commonRules } from './index'
 
-export function astro({
+export default function astro({
   formatters,
   tailwindcssMultiline = false,
   mergeOptions,
@@ -40,5 +40,3 @@ export function astro({
     },
   }, mergeOptions), ...userConfigs)
 }
-
-export default astro

@@ -28,6 +28,7 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'operator-assignment': ['error', 'always'],
   'style/array-bracket-newline': ['warn', 'consistent'],
   'style/array-element-newline': ['warn', 'consistent'],
+  'style/indent': ['error', 2, { CallExpression: { arguments: 'first' } }],
   'style/object-curly-newline': ['warn', { consistent: true }],
   'style/wrap-regex': 'warn',
   'ts/adjacent-overload-signatures': 'error',
@@ -47,7 +48,6 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'ts/prefer-namespace-keyword': 'error',
   'unicorn/no-new-array': 'off',
   'unused-imports/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
-  'style/indent': ['error', 2, { CallExpression: { arguments: 'first' } }],
 
   'style/padding-line-between-statements': [
     'error',
@@ -61,7 +61,3 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
     { blankLine: 'always', prev: [...paddingAround, ...paddingAfter], next: '*' },
   ],
 }
-
-export * from './astro'
-export * from './typescript'
-export * from './vue'

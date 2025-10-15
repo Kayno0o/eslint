@@ -4,9 +4,9 @@ import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
-import { commonRules } from '~'
+import { commonRules } from './index'
 
-export function typescript(options?: {
+export default function typescript(options?: {
   formatters?: OptionsFormatters
   mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
@@ -17,5 +17,3 @@ export function typescript(options?: {
     rules: commonRules,
   }, options?.mergeOptions), ...userConfigs)
 }
-
-export default typescript

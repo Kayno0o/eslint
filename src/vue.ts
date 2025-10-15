@@ -5,9 +5,9 @@ import antfu from '@antfu/eslint-config'
 import eslintPluginTailwindCSS from 'eslint-plugin-better-tailwindcss'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
-import { commonRules } from '~'
+import { commonRules } from './index'
 
-export function vue({
+export default function vue({
   i18n = false,
   a11y = false,
   tailwindcss = undefined,
@@ -74,5 +74,3 @@ export function vue({
     },
   }, mergeOptions), ...userConfigs)
 }
-
-export default vue

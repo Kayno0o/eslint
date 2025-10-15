@@ -7,10 +7,6 @@
     "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "paths": {
-      "~/*": ["src/*"],
-      "~": ["src/index.ts"]
-    },
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "strict": true,
