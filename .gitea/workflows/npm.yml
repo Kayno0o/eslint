@@ -27,10 +27,11 @@ jobs:
       - name: Build package files
         run: bun run build
 
+      - name: Create Gitea release
+        uses: akkuman/gitea-release-action@v1
+
       - name: Configure npm for publishing
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Generate changelog
-        run: bun x changelogen@latest --release --publish
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Publish to npm
+        run: npm publish --access public
