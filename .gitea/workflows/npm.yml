@@ -1,0 +1,33 @@
+name: Release
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  npm:
+    runs-on: debian
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup project
+        uses: ./.gitea/actions/setup
+
+      - name: Build package files
+        run: bun run build
+
+      - name: Configure npm for publishing
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Generate changelog
+        run: bun x changelogen@latest --release --publish
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
