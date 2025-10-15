@@ -24,12 +24,6 @@ jobs:
       - name: Setup project
         uses: ./.gitea/actions/setup
 
-      - name: Configure git
-        run: |
-          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
-          git config --global user.email "bot@gitea.local"
-          git config --global user.name "Gitea Bot"
-
       - name: Build package files
         run: bun run build
 
