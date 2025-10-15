@@ -20,6 +20,8 @@ jobs:
 
       - name: Setup project
         uses: ./.gitea/actions/setup
+        with:
+          system-packages: wget
 
       - name: Build package files
         run: bun run build
