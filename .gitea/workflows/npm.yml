@@ -28,7 +28,9 @@ jobs:
         run: bun run build
 
       - name: Generate changelog
-        run: bun x changelogen@latest --release --no-commit --no-tag
+        run: bun x @kaynooo/changelogitea
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Create Gitea release
         uses: akkuman/gitea-release-action@v1
