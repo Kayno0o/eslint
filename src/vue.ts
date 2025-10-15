@@ -5,9 +5,9 @@ import antfu from '@antfu/eslint-config'
 import eslintPluginTailwindCSS from 'eslint-plugin-better-tailwindcss'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
-import { commonRules } from './index'
+import { commonRules, typeAwareRules } from './index'
 
-export default function vue({
+export default async function vue({
   i18n = false,
   a11y = false,
   tailwindcss = undefined,
@@ -29,7 +29,9 @@ export default function vue({
       github,
       ...(tailwindcss && { 'better-tailwindcss': eslintPluginTailwindCSS }),
     },
-    typescript: true,
+    typescript: {
+      tsconfigPath: 'tsconfig.json',
+    },
     vue: { a11y, vueVersion: 3 },
     formatters: { css: true },
     rules: {
@@ -72,5 +74,8 @@ export default function vue({
         entryPoint: tailwindcssEntryPoint ?? 'app/assets/css/main.css',
       },
     },
-  }, mergeOptions), ...userConfigs)
+  }, mergeOptions), {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.vue'],
+    rules: typeAwareRules,
+  }, ...userConfigs)
 }

@@ -5,9 +5,9 @@ import antfu from '@antfu/eslint-config'
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import github from 'eslint-plugin-github'
 import _ from 'lodash'
-import { commonRules } from './index'
+import { commonRules, typeAwareRules } from './index'
 
-export default function astro({
+export default async function astro({
   formatters,
   tailwindcssMultiline = false,
   mergeOptions,
@@ -18,7 +18,9 @@ export default function astro({
 } = {}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(_.merge({
     plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
-    typescript: true,
+    typescript: {
+      tsconfigPath: 'tsconfig.json',
+    },
     formatters: { css: true, ...(formatters ?? {}) },
     astro: true,
     jsx: true,
@@ -38,5 +40,8 @@ export default function astro({
         entryPoint: 'src/styles/global.css',
       },
     },
-  }, mergeOptions), ...userConfigs)
+  }, mergeOptions), {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.astro'],
+    rules: typeAwareRules,
+  }, ...userConfigs)
 }

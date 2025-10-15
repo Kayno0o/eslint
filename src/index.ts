@@ -61,3 +61,8 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
     { blankLine: 'always', prev: [...paddingAround, ...paddingAfter], next: '*' },
   ],
 }
+
+export const typeAwareRules: Partial<Linter.RulesRecord & Rules> = {
+  'ts/strict-boolean-expressions': 'error',
+  'ts/no-unsafe-assignment': 'off',
+}
