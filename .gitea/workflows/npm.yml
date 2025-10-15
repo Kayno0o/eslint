@@ -28,7 +28,7 @@ jobs:
         run: bun run build
 
       - name: Generate changelog
-        run: bun x @kaynooo/changelogitea
+        run: bun x @kaynooo/changelogitea@latest
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
