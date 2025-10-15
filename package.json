@@ -25,7 +25,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "check": "tsc --noEmit --strict",
+    "build": "tsdown",
     "lint:fix": "eslint . --fix",
     "lint": "eslint ."
   },
@@ -43,7 +44,7 @@
     "@types/bun": "^1.2.23",
     "@types/lodash": "^4.17.20",
     "eslint-plugin-vuejs-accessibility": "^2.4.1",
-    "tsup": "^8.5.0",
+    "husky": "^9.1.7",
     "typescript": "^5.9.3"
   }
 }
