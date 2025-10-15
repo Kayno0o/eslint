@@ -32,11 +32,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Create Gitea release
-        uses: akkuman/gitea-release-action@v1
-        with:
-          body_path: CHANGELOG.md
-
       - name: Configure npm for publishing
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
