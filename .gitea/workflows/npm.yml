@@ -13,6 +13,9 @@ jobs:
   npm:
     runs-on: debian
     steps:
+      - name: Install git before checkout
+        run: apt-get update && apt-get install -y git wget
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -20,27 +23,14 @@ jobs:
 
       - name: Setup project
         uses: ./.gitea/actions/setup
-        with:
-          system-packages: wget
-
-      - name: Configure git safe directory
-        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
 
       - name: Build package files
         run: bun run build
 
-      - name: Generate changelog with git-cliff
-        run: |
-          wget -qO- https://github.com/orhun/git-cliff/releases/download/v2.10.1/git-cliff-2.10.1-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./git-cliff-2.10.1/git-cliff --tag ${GITHUB_REF_NAME} --output CHANGELOG.md
-
-      - name: Create Gitea release
-        uses: https://gitea.com/actions/gitea-release-action@v1
-        with:
-          body_path: CHANGELOG.md
-
       - name: Configure npm for publishing
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Publish to npm
-        run: npm publish --access public
+      - name: Generate changelog
+        run: bun x changelogen@latest --release --publish
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
