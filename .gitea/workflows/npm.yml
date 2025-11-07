@@ -28,7 +28,8 @@ jobs:
 
       - name: Configure npm authentication
         run: |
-          echo "//git.kaynooo.fr/api/packages/kaynooo/npm/:_authToken=${PACKAGE_TOKEN}" > ~/.npmrc
+          echo "@kaynooo:registry=https://git.kaynooo.fr/api/packages/kaynooo/npm/" > ~/.npmrc
+          echo "//git.kaynooo.fr/api/packages/kaynooo/npm/:_authToken=${PACKAGE_TOKEN}" >> ~/.npmrc
         env:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
