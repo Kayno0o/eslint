@@ -2,7 +2,6 @@
   "name": "@kaynooo/eslint",
   "type": "module",
   "version": "1.5.0",
-  "private": true,
   "author": "Kaynooo <https://github.com/Kayno0o>",
   "license": "MIT",
   "repository": {
@@ -13,7 +12,8 @@
     "url": "https://github.com/Kayno0o/eslint/issues"
   },
   "publishConfig": {
-    "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm/"
+    "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm/",
+    "access": "restricted"
   },
   "exports": {
     "./typescript": {
@@ -29,9 +29,7 @@
       "import": "./dist/vue.mjs"
     }
   },
-  "bin": "./bin/index.mjs",
   "files": [
-    "bin",
     "dist"
   ],
   "scripts": {
