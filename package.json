@@ -2,6 +2,7 @@
   "name": "@kaynooo/eslint",
   "type": "module",
   "version": "1.4.4",
+  "private": true,
   "author": "Kaynooo <https://github.com/Kayno0o>",
   "license": "MIT",
   "repository": {
