@@ -6,10 +6,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kayno0o/eslint.git"
+    "url": "https://github.com/Kayno0o/eslint"
   },
   "bugs": {
     "url": "https://github.com/Kayno0o/eslint/issues"
+  },
+  "publishConfig": {
+    "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm"
   },
   "exports": {
     "./typescript": {
