@@ -2,14 +2,14 @@
   "name": "@kaynooo/eslint",
   "type": "module",
   "version": "1.5.1",
-  "author": "Kaynooo <https://github.com/Kayno0o>",
+  "author": "Kaynooo <https://git.kaynooo.fr/kaynooo>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kayno0o/eslint"
+    "url": "https://git.kaynooo.fr/kaynooo/eslint"
   },
   "bugs": {
-    "url": "https://github.com/Kayno0o/eslint/issues"
+    "url": "https://git.kaynooo.fr/kaynooo/eslint/issues"
   },
   "publishConfig": {
     "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm/",
