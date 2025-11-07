@@ -17,19 +17,19 @@
   },
   "exports": {
     "./typescript": {
-      "types": "./dist/typescript.d.ts",
-      "import": "./dist/typescript.js"
+      "types": "./dist/typescript.d.mts",
+      "import": "./dist/typescript.mjs"
     },
     "./astro": {
-      "types": "./dist/astro.d.ts",
-      "import": "./dist/astro.js"
+      "types": "./dist/astro.d.mts",
+      "import": "./dist/astro.mjs"
     },
     "./vue": {
-      "types": "./dist/vue.d.ts",
-      "import": "./dist/vue.js"
+      "types": "./dist/vue.d.mts",
+      "import": "./dist/vue.mjs"
     }
   },
-  "bin": "./bin/index.js",
+  "bin": "./bin/index.mjs",
   "files": [
     "bin",
     "dist"
