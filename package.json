@@ -12,7 +12,7 @@
     "url": "https://github.com/Kayno0o/eslint/issues"
   },
   "publishConfig": {
-    "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm"
+    "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm/"
   },
   "exports": {
     "./typescript": {
