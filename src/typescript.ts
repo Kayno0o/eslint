@@ -14,6 +14,7 @@ export default async function typescript(options?: {
   return antfu(
     _.merge(
       {
+        ignores: ['**/*.md'],
         plugins: { github },
         formatters: options?.formatters,
         typescript: options?.strict

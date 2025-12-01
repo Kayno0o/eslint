@@ -29,6 +29,7 @@ export default async function vue({
   return antfu(
     _.merge(
       {
+        ignores: ['**/*.md'],
         plugins: {
           github,
           ...(tailwindcss && { 'better-tailwindcss': eslintPluginTailwindCSS }),

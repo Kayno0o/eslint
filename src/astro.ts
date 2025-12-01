@@ -21,6 +21,7 @@ export default async function astro({
   return antfu(
     _.merge(
       {
+        ignores: ['**/*.md'],
         plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
         typescript: strict
           ? {
