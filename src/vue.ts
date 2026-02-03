@@ -51,6 +51,7 @@ export default async function vue({
           'vue/no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
           'vue/require-explicit-emits': 'error',
           'vue/require-explicit-slots': 'warn',
+          'vue/attributes-order': ['warn', { alphabetical: true }],
           // false positive
           'vue-a11y/label-has-for': 'off',
           // custom options
