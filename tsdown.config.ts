@@ -11,4 +11,13 @@ export default defineConfig({
   clean: true,
   minify: true,
   treeshake: true,
+  inlineOnly: false,
+  external: [
+    // '@antfu/eslint-config',
+    // 'eslint',
+    'eslint-plugin-better-tailwindcss',
+    // 'eslint-plugin-format',
+    '@eslint/config-helpers',
+    // 'eslint-flat-config-utils',
+  ],
 })
