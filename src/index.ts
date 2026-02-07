@@ -4,7 +4,7 @@ import type { Linter } from 'eslint'
 type StatementType = '*' | 'exports' | 'require' | 'directive' | 'iife' | 'block' | 'empty' | 'function' | 'ts-method' | 'break' | 'case' | 'class' | 'continue' | 'debugger' | 'default' | 'do' | 'for' | 'if' | 'import' | 'switch' | 'throw' | 'try' | 'while' | 'with' | 'cjs-export' | 'cjs-import' | 'enum' | 'interface' | 'function-overload' | 'block-like' | 'singleline-block-like' | 'multiline-block-like' | 'expression' | 'singleline-expression' | 'multiline-expression' | 'return' | 'singleline-return' | 'multiline-return' | 'export' | 'singleline-export' | 'multiline-export' | 'var' | 'singleline-var' | 'multiline-var' | 'let' | 'singleline-let' | 'multiline-let' | 'const' | 'singleline-const' | 'multiline-const' | 'using' | 'singleline-using' | 'multiline-using' | 'type' | 'singleline-type' | 'multiline-type'
 type StatementArrayType = [StatementType, ...StatementType[]]
 
-const paddingBefore: StatementArrayType = ['return', 'try', 'continue', 'break']
+const paddingBefore: StatementArrayType = ['return', 'try', 'continue', 'break', 'throw']
 const paddingAfter: StatementArrayType = [] as any
 const paddingAround: StatementArrayType = ['if', 'function', 'switch', 'while']
 
