@@ -37,7 +37,6 @@ export default async function astro({
           'style/jsx-tag-spacing': 'off',
           // tw 4
           ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
-          'better-tailwindcss/no-unregistered-classes': ['warn', { detectComponentClasses: true }],
           'better-tailwindcss/enforce-consistent-line-wrapping': tailwindcssMultiline
             ? ['warn', { group: 'newLine', printWidth: 120 }]
             : ['warn', { printWidth: 0, preferSingleLine: true }],
