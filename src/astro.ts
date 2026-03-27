@@ -62,7 +62,7 @@ export default async function astro({
     },
     strict
       ? {
-        files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.astro'],
+        files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.astro', '**/*.tsx'],
         rules: typeAwareRules,
       }
       : {},
