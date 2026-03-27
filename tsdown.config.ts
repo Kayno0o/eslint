@@ -8,17 +8,15 @@ export default defineConfig({
   format: ['esm'],
   dts: true,
   clean: true,
-  minify: true,
   treeshake: true,
   deps: {
     neverBundle: [
-    // '@antfu/eslint-config',
-    // 'eslint',
+      '@antfu/eslint-config',
+      'eslint',
+      'eslint-flat-config-utils',
       'eslint-plugin-better-tailwindcss',
-      // 'eslint-plugin-format',
-      '@eslint/config-helpers',
-    // 'eslint-flat-config-utils',
+      'eslint-plugin-format',
+      'eslint-plugin-github',
     ],
-    onlyBundle: false,
   },
 })
