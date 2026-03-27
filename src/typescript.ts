@@ -3,7 +3,7 @@ import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import github from 'eslint-plugin-github'
-import _ from 'lodash'
+import merge from 'lodash.merge'
 import { commonRules, typeAwareRules } from './index'
 
 export default async function typescript(options?: {
@@ -12,7 +12,7 @@ export default async function typescript(options?: {
   strict?: boolean
 }, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
   return antfu(
-    _.merge(
+    merge(
       {
         ignores: ['**/*.md'],
         plugins: { github },
@@ -32,6 +32,13 @@ export default async function typescript(options?: {
         rules: typeAwareRules,
       }
       : {},
+    {
+      // fix for @eslint/markdown@7.x
+      files: ['**/*.md'],
+      rules: {
+        'logical-assignment-operators': 'off',
+      },
+    },
     ...userConfigs,
   )
 }
