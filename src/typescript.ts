@@ -2,9 +2,8 @@ import type { Awaitable, OptionsConfig, OptionsFormatters, TypedFlatConfigItem }
 import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
-import github from 'eslint-plugin-github'
 import merge from 'lodash.merge'
-import { commonRules, typeAwareRules } from './index'
+import { commonRules, githubPlugin, typeAwareRules } from './index'
 
 export default async function typescript(options?: {
   formatters?: OptionsFormatters
@@ -15,7 +14,7 @@ export default async function typescript(options?: {
     merge(
       {
         ignores: ['**/*.md'],
-        plugins: { github },
+        plugins: { github: githubPlugin },
         formatters: options?.formatters,
         typescript: options?.strict
           ? {

@@ -3,9 +3,8 @@ import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
-import github from 'eslint-plugin-github'
 import merge from 'lodash.merge'
-import { commonRules, typeAwareRules } from './index'
+import { commonRules, githubPlugin, typeAwareRules } from './index'
 
 export default async function astro({
   formatters,
@@ -22,7 +21,7 @@ export default async function astro({
     merge(
       {
         ignores: ['**/*.md'],
-        plugins: { github, 'better-tailwindcss': eslintPluginBetterTailwindcss },
+        plugins: { 'github': githubPlugin, 'better-tailwindcss': eslintPluginBetterTailwindcss },
         typescript: strict
           ? {
             tsconfigPath: 'tsconfig.json',
