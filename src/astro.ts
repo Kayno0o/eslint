@@ -53,6 +53,13 @@ export default async function astro({
       },
       mergeOptions,
     ),
+    {
+      // fix for @eslint/markdown@7.x
+      files: ['**/*.md'],
+      rules: {
+        'logical-assignment-operators': 'off',
+      },
+    },
     strict
       ? {
         files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.astro'],
