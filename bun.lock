@@ -6,6 +6,7 @@
       "name": "@kaynooo/eslint",
       "dependencies": {
         "@antfu/eslint-config": "^7.7.3",
+        "@typescript-eslint/utils": "^8.57.0",
         "eslint-plugin-better-tailwindcss": "^4.3.2",
         "eslint-plugin-format": "^2.0.1",
         "eslint-plugin-github": "^6.0.0",
