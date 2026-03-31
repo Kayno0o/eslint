@@ -17,7 +17,7 @@ const rule: Rule.RuleModule = {
           return
 
         const callback = node.arguments[0]
-        const isFixable = callback
+        const isFixable = callback !== undefined
           && (callback.type === 'ArrowFunctionExpression' || callback.type === 'FunctionExpression')
           && callback.params.length >= 1
           && callback.params[0].type === 'Identifier'
@@ -28,8 +28,8 @@ const rule: Rule.RuleModule = {
           fix: isFixable
             ? (fixer) => {
               const array = sourceCode.getText(node.callee.type === 'MemberExpression' ? node.callee.object : node.callee)
-              const param = sourceCode.getText((callback as any).params[0])
-              const bodyNode = (callback as any).body
+              const param = sourceCode.getText(callback.params[0])
+              const bodyNode = callback.body
               const body = bodyNode.type === 'BlockStatement'
                 ? sourceCode.getText(bodyNode)
                 : `{ ${sourceCode.getText(bodyNode)} }`
