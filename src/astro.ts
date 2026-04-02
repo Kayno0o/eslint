@@ -25,6 +25,7 @@ export default async function astro({
         typescript: strict
           ? {
             tsconfigPath: 'tsconfig.json',
+            filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.vue'],
           }
           : true,
         formatters: { css: true, ...(formatters ?? {}) },

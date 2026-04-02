@@ -19,6 +19,7 @@ export default async function typescript(options?: {
         typescript: options?.strict
           ? {
             tsconfigPath: 'tsconfig.json',
+            filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.vue'],
           }
           : true,
         rules: commonRules,
