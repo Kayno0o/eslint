@@ -3,7 +3,7 @@ import type { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import merge from 'lodash.merge'
-import { commonRules, githubPlugin, typeAwareRules } from './index'
+import { commonRules, kaynoooPlugin, typeAwareRules } from './index'
 
 export default async function typescript(options?: {
   formatters?: OptionsFormatters
@@ -14,7 +14,7 @@ export default async function typescript(options?: {
     merge(
       {
         ignores: ['**/*.md'],
-        plugins: { github: githubPlugin },
+        plugins: { kaynooo: kaynoooPlugin },
         formatters: options?.formatters,
         typescript: options?.strict
           ? {

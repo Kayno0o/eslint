@@ -4,7 +4,7 @@ import type { Linter } from 'eslint/universal'
 import antfu from '@antfu/eslint-config'
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import merge from 'lodash.merge'
-import { commonRules, githubPlugin, typeAwareRules } from './index'
+import { commonRules, kaynoooPlugin, typeAwareRules } from './index'
 
 export default async function astro({
   formatters,
@@ -21,7 +21,7 @@ export default async function astro({
     merge(
       {
         ignores: ['**/*.md'],
-        plugins: { 'github': githubPlugin, 'better-tailwindcss': eslintPluginBetterTailwindcss },
+        plugins: { 'kaynooo': kaynoooPlugin, 'better-tailwindcss': eslintPluginBetterTailwindcss },
         typescript: strict
           ? {
             tsconfigPath: 'tsconfig.json',

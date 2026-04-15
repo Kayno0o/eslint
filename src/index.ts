@@ -1,11 +1,13 @@
 import type { Rules } from '@antfu/eslint-config'
 import type { Linter } from 'eslint'
 import arrayForeach from './rules/array-foreach'
+import noEmptyFirstLastLine from './rules/no-empty-first-last-line'
 import noThen from './rules/no-then'
 
-export const githubPlugin = {
+export const kaynoooPlugin = {
   rules: {
     'array-foreach': arrayForeach,
+    'no-empty-first-last-line': noEmptyFirstLastLine,
     'no-then': noThen,
   },
 }
@@ -24,22 +26,40 @@ const paddingGroups: StatementArrayType[] = [
 
 export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'antfu/no-top-level-await': 'off',
-  'github/array-foreach': 'error',
-  'github/no-then': 'error',
+
+  'kaynooo/array-foreach': 'error',
+  'kaynooo/no-empty-first-last-line': 'error',
+  'kaynooo/no-then': 'error',
+
   'logical-assignment-operators': ['error', 'always', { enforceForIfStatements: true }],
   'new-cap': ['error'],
+
   'no-console': 'off',
   'no-else-return': ['error', { allowElseIf: false }],
   'no-empty-function': 'off',
   'no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
   'no-lonely-if': ['error'],
+
   'node/prefer-global/process': 'off',
   'operator-assignment': ['error', 'always'],
+
   'style/array-bracket-newline': ['warn', 'consistent'],
   'style/array-element-newline': ['warn', 'consistent'],
   'style/indent': ['error', 2, { CallExpression: { arguments: 'first' } }],
   'style/object-curly-newline': ['warn', { consistent: true }],
   'style/wrap-regex': 'warn',
+  'style/padding-line-between-statements': [
+    'error',
+
+    ...paddingGroups.flatMap(block => [
+      { blankLine: 'always' as const, prev: block, next: '*' as const },
+      { blankLine: 'any' as const, prev: block, next: block },
+    ]),
+
+    { blankLine: 'always', prev: '*', next: [...paddingAround, ...paddingBefore] },
+    { blankLine: 'always', prev: [...paddingAround, ...paddingAfter], next: '*' },
+  ],
+
   'ts/adjacent-overload-signatures': 'error',
   'ts/array-type': 'error',
   'ts/ban-ts-comment': 'error',
@@ -55,20 +75,10 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'ts/prefer-for-of': 'error',
   'ts/prefer-function-type': 'error',
   'ts/prefer-namespace-keyword': 'error',
+
   'unicorn/no-new-array': 'off',
+
   'unused-imports/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
-
-  'style/padding-line-between-statements': [
-    'error',
-
-    ...paddingGroups.flatMap(block => [
-      { blankLine: 'always' as const, prev: block, next: '*' as const },
-      { blankLine: 'any' as const, prev: block, next: block },
-    ]),
-
-    { blankLine: 'always', prev: '*', next: [...paddingAround, ...paddingBefore] },
-    { blankLine: 'always', prev: [...paddingAround, ...paddingAfter], next: '*' },
-  ],
 }
 
 export const typeAwareRules: Partial<Linter.RulesRecord & Rules> = {
