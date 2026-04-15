@@ -16,7 +16,6 @@ export default defineConfig({
       'eslint-flat-config-utils',
       'eslint-plugin-better-tailwindcss',
       'eslint-plugin-format',
-      'eslint-plugin-github',
     ],
   },
 })
