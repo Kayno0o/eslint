@@ -17,6 +17,9 @@ tester.run('array-foreach', rule, {
     // no fix (function reference)
     { code: '[1,2,3].forEach(fn)', errors: [{ messageId: 'preferForOf' }] },
 
+    // no fix (index param can't be expressed in for...of)
+    { code: 'byLayer.forEach((group, li) => { use(group, li) })', errors: [{ messageId: 'preferForOf' }] },
+
     // arrow function expression body
     {
       code: 'arr.forEach(x => x)',

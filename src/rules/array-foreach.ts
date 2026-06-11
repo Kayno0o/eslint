@@ -19,7 +19,7 @@ const rule: Rule.RuleModule = {
         const callback = node.arguments[0]
         const isFixable = callback !== undefined
           && (callback.type === 'ArrowFunctionExpression' || callback.type === 'FunctionExpression')
-          && callback.params.length >= 1
+          && callback.params.length === 1
           && callback.params[0].type === 'Identifier'
 
         context.report({
