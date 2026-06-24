@@ -17,22 +17,31 @@ const rule: Rule.RuleModule = {
           return
 
         const callback = node.arguments[0]
-        const isFixable = callback !== undefined
-          && (callback.type === 'ArrowFunctionExpression' || callback.type === 'FunctionExpression')
-          && callback.params.length === 1
-          && callback.params[0].type === 'Identifier'
+
+        if (callback === undefined || (callback.type !== 'ArrowFunctionExpression' && callback.type !== 'FunctionExpression'))
+          return context.report({ node, messageId: 'preferForOf' })
+
+        const params = callback.params
+        const oneParam = params.length === 1 && params[0].type === 'Identifier'
+        const twoParams = params.length === 2 && params[0].type === 'Identifier' && params[1].type === 'Identifier'
 
         context.report({
           node,
           messageId: 'preferForOf',
-          fix: isFixable
+          fix: (oneParam || twoParams)
             ? (fixer) => {
               const array = sourceCode.getText(node.callee.type === 'MemberExpression' ? node.callee.object : node.callee)
-              const param = sourceCode.getText(callback.params[0])
+              const param = sourceCode.getText(params[0])
               const bodyNode = callback.body
               const body = bodyNode.type === 'BlockStatement'
                 ? sourceCode.getText(bodyNode)
                 : `{ ${sourceCode.getText(bodyNode)} }`
+
+              if (twoParams) {
+                const indexParam = sourceCode.getText(params[1])
+
+                return fixer.replaceText(node, `for (const [${indexParam}, ${param}] of ${array}.entries()) ${body}`)
+              }
 
               return fixer.replaceText(node, `for (const ${param} of ${array}) ${body}`)
             }

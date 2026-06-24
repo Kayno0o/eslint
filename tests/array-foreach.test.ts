@@ -17,8 +17,19 @@ tester.run('array-foreach', rule, {
     // no fix (function reference)
     { code: '[1,2,3].forEach(fn)', errors: [{ messageId: 'preferForOf' }] },
 
-    // no fix (index param can't be expressed in for...of)
-    { code: 'byLayer.forEach((group, li) => { use(group, li) })', errors: [{ messageId: 'preferForOf' }] },
+    // 2-param: value + index → entries()
+    {
+      code: 'byLayer.forEach((group, li) => { use(group, li) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'for (const [li, group] of byLayer.entries()) { use(group, li) }',
+    },
+
+    // 2-param: index used only in nested closure
+    {
+      code: 'arr.forEach((cb, i) => { cb.addEventListener("change", () => fn(i, cb.checked)) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'for (const [i, cb] of arr.entries()) { cb.addEventListener("change", () => fn(i, cb.checked)) }',
+    },
 
     // arrow function expression body
     {
