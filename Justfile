@@ -1,5 +1,3 @@
-.PHONY: build major minor patch
-
 build:
 	bun run build
 
