@@ -1,6 +1,7 @@
 import type { Rules } from '@antfu/eslint-config'
 import type { Linter } from 'eslint'
 import arrayForeach from './rules/array-foreach'
+import maxStatementPerLine from './rules/max-statements-per-line'
 import noEmptyFirstLastLine from './rules/no-empty-first-last-line'
 import noThen from './rules/no-then'
 
@@ -9,6 +10,7 @@ export const kaynoooPlugin = {
     'array-foreach': arrayForeach,
     'no-empty-first-last-line': noEmptyFirstLastLine,
     'no-then': noThen,
+    'max-statements-per-line': maxStatementPerLine,
   },
 }
 
@@ -30,6 +32,9 @@ export const commonRules: Partial<Linter.RulesRecord & Rules> = {
   'kaynooo/array-foreach': 'error',
   'kaynooo/no-empty-first-last-line': 'error',
   'kaynooo/no-then': 'error',
+  'kaynooo/max-statements-per-line': 'error',
+
+  'style/max-statements-per-line': 'off',
 
   'logical-assignment-operators': ['error', 'always', { enforceForIfStatements: true }],
   'new-cap': ['error'],
