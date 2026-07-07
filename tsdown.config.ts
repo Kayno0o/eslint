@@ -4,6 +4,7 @@ export default defineConfig({
   entry: {
     typescript: './src/typescript.ts',
     astro: './src/astro.ts',
+    solid: './src/solid.ts',
   },
   format: ['esm'],
   dts: true,

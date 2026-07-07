@@ -23,6 +23,10 @@
     "./astro": {
       "types": "./dist/astro.d.mts",
       "import": "./dist/astro.mjs"
+    },
+    "./solid": {
+      "types": "./dist/solid.d.mts",
+      "import": "./dist/solid.mjs"
     }
   },
   "files": [
@@ -40,8 +44,10 @@
   },
   "dependencies": {
     "@antfu/eslint-config": "^9.1.0",
+    "@typescript-eslint/parser": "^8.63.0",
     "eslint-plugin-better-tailwindcss": "^4.6.0",
     "eslint-plugin-format": "^2.0.1",
+    "eslint-plugin-solid": "^0.14.5",
     "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
