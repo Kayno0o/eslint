@@ -60,18 +60,3 @@ tester.run('array-foreach', rule, {
     },
   ],
 })
-
-function e() {
-  const condition = false
-
-  let bar = 1
-  let baz = 1
-
-  if (condition)
-    bar = 2; else
-    baz = 2
-
-  console.log(bar, baz)
-}
-
-e()

@@ -9,7 +9,7 @@ export default async function typescript(options?: {
   formatters?: OptionsFormatters
   mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
   strict?: boolean
-}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]) {
+}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]): Promise<Linter.Config[]> {
   return antfu(
     merge(
       {

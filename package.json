@@ -40,12 +40,12 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "eslint": "^10.5.0"
+    "eslint": "^10.6.0"
   },
   "dependencies": {
     "@antfu/eslint-config": "^9.1.0",
     "@typescript-eslint/parser": "^8.63.0",
-    "eslint-plugin-better-tailwindcss": "^4.6.0",
+    "eslint-plugin-better-tailwindcss": "^4.6.1",
     "eslint-plugin-format": "^2.0.1",
     "eslint-plugin-solid": "^0.14.5",
     "lodash.merge": "^4.6.2"
@@ -53,10 +53,10 @@
   "devDependencies": {
     "@types/bun": "^1.3.14",
     "@types/lodash.merge": "^4.6.9",
-    "baseline-browser-mapping": "^2.10.38",
-    "eslint": "^10.5.0",
+    "baseline-browser-mapping": "^2.10.42",
+    "eslint": "^10.6.0",
     "husky": "^9.1.7",
     "tsdown": "^0.22.3",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
