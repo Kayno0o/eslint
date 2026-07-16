@@ -4,7 +4,7 @@ import { pluginRegexp } from '../plugins'
 export function regexp(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/regexp/rules',
+      name: 'kaynooo/regexp/rules',
       ignores: [
         '**/*.md',
       ],

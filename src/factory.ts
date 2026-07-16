@@ -1,5 +1,4 @@
-import type { Linter } from 'eslint'
-import type { Awaitable, FactoryOptions, TypedFlatConfigItem } from './types'
+import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from './types'
 import { composer } from 'eslint-flat-config-utils'
 import { astro } from './presets/astro'
 import { command } from './presets/command'
@@ -13,30 +12,36 @@ import { javascript } from './presets/javascript'
 import { jsdoc } from './presets/jsdoc'
 import { jsonc } from './presets/jsonc'
 import { jsx } from './presets/jsx'
+import { kaynooo, kaynoooTypeAware } from './presets/kaynooo'
 import { markdown } from './presets/markdown'
 import { node } from './presets/node'
 import { perfectionist } from './presets/perfectionist'
 import { regexp } from './presets/regexp'
 import { solid } from './presets/solid'
 import { stylistic } from './presets/stylistic'
+import { tailwind } from './presets/tailwind'
 import { test } from './presets/test'
 import { toml } from './presets/toml'
 import { typescript } from './presets/typescript'
+import { ui } from './presets/ui'
 import { unicorn } from './presets/unicorn'
 import { yaml } from './presets/yaml'
 
-type UserConfig = Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | Linter.Config[]>
+const GLOB_TS = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 
 export async function defineConfig(options: FactoryOptions = {}, ...userConfigs: UserConfig[]) {
   const {
-    strict,
-    tsconfigPath,
-    filesTypeAware,
-    formatters: formattersOptions,
-    astro: enableAstro,
-    solid: enableSolid,
+    strict = true,
+    tsconfigPath = strict ? 'tsconfig.json' : undefined,
+    astro: enableAstro = false,
+    solid: enableSolid = false,
     overrides,
   } = options
+
+  const markup = enableAstro || enableSolid
+  const filesTypeAware = options.filesTypeAware ?? (enableAstro ? [...GLOB_TS, '**/*.astro'] : GLOB_TS)
+  const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
+  const tailwindOptions = options.tailwind ?? markup
 
   const configs: Awaitable<TypedFlatConfigItem[]>[] = [
     ignores(),
@@ -56,10 +61,10 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     test(),
   ]
 
-  if (enableAstro === true)
+  if (enableAstro)
     configs.push(astro())
 
-  if (enableSolid != null && enableSolid !== false)
+  if (enableSolid)
     configs.push(solid())
 
   configs.push(jsonc(), yaml(), toml(), markdown())
@@ -67,7 +72,16 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   if (formattersEnabled(formattersOptions))
     configs.push(formatters(formattersOptions))
 
-  configs.push(disables())
+  configs.push(disables(), kaynooo())
+
+  if (markup)
+    configs.push(ui())
+
+  if (tailwindOptions !== false)
+    configs.push(tailwind(tailwindOptions === true ? {} : tailwindOptions))
+
+  if (strict)
+    configs.push(kaynoooTypeAware(filesTypeAware))
 
   if (overrides != null)
     configs.push([{ name: 'kaynooo/overrides', ...overrides }])

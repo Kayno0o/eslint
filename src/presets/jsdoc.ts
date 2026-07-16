@@ -4,13 +4,13 @@ import { pluginJsdoc } from '../plugins'
 export function jsdoc(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/jsdoc/setup',
+      name: 'kaynooo/jsdoc/setup',
       plugins: {
         jsdoc: pluginJsdoc,
       },
     },
     {
-      name: 'antfu/jsdoc/rules',
+      name: 'kaynooo/jsdoc/rules',
       files: [
         '**/*.?([cm])[jt]s?(x)',
       ],

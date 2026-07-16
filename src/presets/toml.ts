@@ -4,13 +4,13 @@ import { parserToml, pluginToml } from '../plugins'
 export function toml(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/toml/setup',
+      name: 'kaynooo/toml/setup',
       plugins: {
         toml: pluginToml,
       },
     },
     {
-      name: 'antfu/toml/rules',
+      name: 'kaynooo/toml/rules',
       files: [
         '**/*.toml',
       ],

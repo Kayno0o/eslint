@@ -1,6 +1,4 @@
 // eslint-disable-next-line antfu/no-import-dist
-import typescript from './dist/typescript.js'
+import { defineConfig } from './dist/index.js'
 
-export default typescript({
-  strict: true,
-})
+export default defineConfig()

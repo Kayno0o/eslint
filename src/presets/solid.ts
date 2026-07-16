@@ -5,11 +5,11 @@ import { parserTs } from '../plugins'
 export function solid(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/solid/setup',
+      name: 'kaynooo/solid/setup',
       plugins: { solid: pluginSolid },
     },
     {
-      name: 'antfu/solid/rules',
+      name: 'kaynooo/solid/rules',
       files: ['**/*.?([cm])jsx', '**/*.?([cm])tsx'],
       languageOptions: {
         sourceType: 'module',

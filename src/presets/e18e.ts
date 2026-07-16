@@ -4,7 +4,7 @@ import { pluginE18e } from '../plugins'
 export function e18e(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/e18e/rules',
+      name: 'kaynooo/e18e/rules',
       ignores: [
         '**/*.md',
       ],

@@ -40,14 +40,14 @@ export function formatters(options: OptionsFormatters | boolean = {}): TypedFlat
 
   const configs: TypedFlatConfigItem[] = [
     {
-      name: 'antfu/formatter/setup',
+      name: 'kaynooo/formatter/setup',
       plugins: { format: pluginFormat },
     },
   ]
 
   const add = (name: string, files: string[], rule: Linter.RuleEntry) => {
     configs.push({
-      name: `antfu/formatter/${name}`,
+      name: `kaynooo/formatter/${name}`,
       files,
       languageOptions: { parser: parserPlain },
       rules: { 'format/prettier': rule },

@@ -4,13 +4,13 @@ import { pluginTest } from '../plugins'
 export function test(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/test/setup',
+      name: 'kaynooo/test/setup',
       plugins: {
         test: pluginTest,
       },
     },
     {
-      name: 'antfu/test/rules',
+      name: 'kaynooo/test/rules',
       files: [
         '**/__tests__/**/*.?([cm])[jt]s?(x)',
         '**/*.spec.?([cm])[jt]s?(x)',

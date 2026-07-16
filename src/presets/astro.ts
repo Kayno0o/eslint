@@ -6,11 +6,11 @@ import { parserTs } from '../plugins'
 export function astro(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/astro/setup',
+      name: 'kaynooo/astro/setup',
       plugins: { astro: pluginAstro },
     },
     {
-      name: 'antfu/astro/rules',
+      name: 'kaynooo/astro/rules',
       files: ['**/*.astro'],
       languageOptions: {
         sourceType: 'module',

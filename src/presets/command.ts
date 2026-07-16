@@ -4,7 +4,7 @@ import { pluginCommand } from '../plugins'
 export function command(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/command/rules',
+      name: 'kaynooo/command/rules',
       ignores: [
         '**/*.md',
       ],

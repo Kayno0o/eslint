@@ -4,13 +4,13 @@ import { pluginJsonc } from '../plugins'
 export function jsonc(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/jsonc/setup',
+      name: 'kaynooo/jsonc/setup',
       plugins: {
         jsonc: pluginJsonc,
       },
     },
     {
-      name: 'antfu/jsonc/rules',
+      name: 'kaynooo/jsonc/rules',
       files: [
         '**/*.json',
         '**/*.json5',
@@ -89,7 +89,7 @@ export function jsonc(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/sort/package-json',
+      name: 'kaynooo/sort/package-json',
       files: [
         '**/package.json',
       ],
@@ -207,7 +207,7 @@ export function jsonc(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/sort/tsconfig-json',
+      name: 'kaynooo/sort/tsconfig-json',
       files: [
         '**/[jt]sconfig.json',
         '**/[jt]sconfig.*.json',

@@ -11,14 +11,14 @@ export interface TypescriptOptions {
 }
 
 export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem[] {
-  const { strict = false, tsconfigPath, filesTypeAware = ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.vue'] } = options
+  const { strict = false, tsconfigPath, filesTypeAware = files } = options
   const configs: TypedFlatConfigItem[] = [
     {
-      name: 'antfu/typescript/setup',
+      name: 'kaynooo/typescript/setup',
       plugins: { antfu: pluginAntfu, ts: pluginTs },
     },
     {
-      name: 'antfu/typescript/parser',
+      name: 'kaynooo/typescript/parser',
       files,
       languageOptions: {
         parser: parserTs,
@@ -26,7 +26,7 @@ export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem
       },
     },
     {
-      name: 'antfu/typescript/rules',
+      name: 'kaynooo/typescript/rules',
       files,
       rules: {
         'constructor-super': 'off',
@@ -141,7 +141,7 @@ export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem
   if (strict && tsconfigPath != null && tsconfigPath !== '') {
     configs.push(
       {
-        name: 'antfu/typescript/type-aware-parser',
+        name: 'kaynooo/typescript/type-aware-parser',
         files: filesTypeAware,
         languageOptions: {
           parser: parserTs,
@@ -154,7 +154,7 @@ export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem
         },
       },
       {
-        name: 'antfu/typescript/rules-type-aware',
+        name: 'kaynooo/typescript/rules-type-aware',
         files: filesTypeAware,
         rules: {
           'dot-notation': 'off',

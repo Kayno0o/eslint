@@ -4,13 +4,13 @@ import { parserYaml, pluginYaml } from '../plugins'
 export function yaml(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/yaml/setup',
+      name: 'kaynooo/yaml/setup',
       plugins: {
         yaml: pluginYaml,
       },
     },
     {
-      name: 'antfu/yaml/rules',
+      name: 'kaynooo/yaml/rules',
       files: [
         '**/*.y?(a)ml',
       ],

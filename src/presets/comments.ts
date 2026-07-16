@@ -4,7 +4,7 @@ import { pluginComments } from '../plugins'
 export function comments(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/eslint-comments/rules',
+      name: 'kaynooo/eslint-comments/rules',
       ignores: [
         '**/*.md',
       ],

@@ -4,13 +4,13 @@ import { pluginNode } from '../plugins'
 export function node(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/node/setup',
+      name: 'kaynooo/node/setup',
       plugins: {
         node: pluginNode,
       },
     },
     {
-      name: 'antfu/node/rules',
+      name: 'kaynooo/node/rules',
       files: [
         '**/*.?([cm])[jt]s?(x)',
       ],

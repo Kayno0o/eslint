@@ -9,6 +9,12 @@ export type TypedFlatConfigItem = Omit<Linter.Config, 'plugins'> & {
 
 export type Rules = Partial<Linter.RulesRecord>
 
+export type UserConfig = Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | Linter.Config[]>
+
+export type StatementType = '*' | 'exports' | 'require' | 'directive' | 'iife' | 'block' | 'empty' | 'function' | 'ts-method' | 'break' | 'case' | 'class' | 'continue' | 'debugger' | 'default' | 'do' | 'for' | 'if' | 'import' | 'switch' | 'throw' | 'try' | 'while' | 'with' | 'cjs-export' | 'cjs-import' | 'enum' | 'interface' | 'function-overload' | 'block-like' | 'singleline-block-like' | 'multiline-block-like' | 'expression' | 'singleline-expression' | 'multiline-expression' | 'return' | 'singleline-return' | 'multiline-return' | 'export' | 'singleline-export' | 'multiline-export' | 'var' | 'singleline-var' | 'multiline-var' | 'let' | 'singleline-let' | 'multiline-let' | 'const' | 'singleline-const' | 'multiline-const' | 'using' | 'singleline-using' | 'multiline-using' | 'type' | 'singleline-type' | 'multiline-type'
+
+export type StatementGroup = [StatementType, ...StatementType[]]
+
 export interface OptionsFormatters {
   /** Enable formatting support for CSS, Less, Sass, and SCSS. */
   css?: 'prettier' | boolean
@@ -32,26 +38,28 @@ export interface OptionsFormatters {
   slidev?: boolean | { files?: string[] }
 }
 
-export interface SolidOptions {
-  overrides?: Rules
+export interface TailwindOptions {
+  /** Wrap classes onto their own lines instead of collapsing to a single line. */
+  multiline?: boolean
+  /** CSS file declaring the Tailwind entry point. */
+  entryPoint?: string
 }
 
 export interface FactoryOptions {
-  /** Enable type-aware linting (requires a tsconfig). */
+  /** Enable type-aware linting. Requires `tsconfigPath` to resolve. */
   strict?: boolean
   /** Path to the tsconfig used for type-aware linting. */
   tsconfigPath?: string
-  /** Files to lint with type information. */
+  /** Files to lint with type information. Defaults to every TS file, plus `.astro` when `astro` is on. */
   filesTypeAware?: string[]
-  /** Enable formatters (CSS, HTML, ...). */
+  /** Enable formatters (CSS, HTML, ...). Defaults to `{ css: true }` when `astro` or `solid` is on. */
   formatters?: OptionsFormatters | boolean
   /** Enable the Astro preset. */
   astro?: boolean
   /** Enable the Solid preset. */
-  solid?: SolidOptions | boolean
+  solid?: boolean
+  /** Enable the Tailwind preset. Defaults to on when `astro` or `solid` is on. */
+  tailwind?: TailwindOptions | boolean
   /** Flat-config fields merged into the trailing overrides item. */
   overrides?: Omit<TypedFlatConfigItem, 'files'>
 }
-
-/** Kept for API compatibility with the previous antfu-based signature. */
-export type OptionsConfig = FactoryOptions

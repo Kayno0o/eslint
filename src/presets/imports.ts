@@ -4,7 +4,7 @@ import { pluginAntfu, pluginImport } from '../plugins'
 export function imports(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/imports/rules',
+      name: 'kaynooo/imports/rules',
       ignores: [
         '**/*.md',
       ],

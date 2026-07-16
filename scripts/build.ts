@@ -1,9 +1,7 @@
 import pkg from '../package.json'
 
 const entrypoints = [
-  'src/typescript.ts',
-  'src/astro.ts',
-  'src/solid.ts',
+  'src/index.ts',
 ]
 
 const external = [

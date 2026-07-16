@@ -4,7 +4,7 @@ import { combinedGlobals, pluginAntfu, pluginUnusedImports } from '../plugins'
 export function javascript(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/javascript/setup',
+      name: 'kaynooo/javascript/setup',
       languageOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
@@ -19,7 +19,7 @@ export function javascript(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/javascript/rules',
+      name: 'kaynooo/javascript/rules',
       ignores: [
         '**/*.md',
       ],

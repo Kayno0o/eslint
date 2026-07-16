@@ -3,9 +3,9 @@ import gitignore from 'eslint-config-flat-gitignore'
 
 export function ignores(userIgnores: string[] = []): TypedFlatConfigItem[] {
   return [
-    gitignore({ strict: false, name: 'antfu/gitignore' }),
+    gitignore({ strict: false, name: 'kaynooo/gitignore' }),
     {
-      name: 'antfu/ignores',
+      name: 'kaynooo/ignores',
       ignores: [
         ...[
           '**/node_modules',

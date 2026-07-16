@@ -4,13 +4,13 @@ import { markdownProcessor, pluginMarkdown } from '../plugins'
 export function markdown(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/markdown/setup',
+      name: 'kaynooo/markdown/setup',
       plugins: {
         markdown: pluginMarkdown,
       },
     },
     {
-      name: 'antfu/markdown/processor',
+      name: 'kaynooo/markdown/processor',
       files: [
         '**/*.md',
       ],
@@ -20,14 +20,14 @@ export function markdown(): TypedFlatConfigItem[] {
       processor: markdownProcessor,
     },
     {
-      name: 'antfu/markdown/parser',
+      name: 'kaynooo/markdown/parser',
       files: [
         '**/*.md',
       ],
       language: 'markdown/gfm',
     },
     {
-      name: 'antfu/markdown/rules',
+      name: 'kaynooo/markdown/rules',
       files: [
         '**/*.md',
       ],
@@ -52,7 +52,7 @@ export function markdown(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/markdown/disables/code',
+      name: 'kaynooo/markdown/disables/code',
       files: [
         '**/*.md/**/*.?([cm])[jt]s?(x)',
       ],

@@ -4,7 +4,7 @@ import { pluginPerfectionist } from '../plugins'
 export function perfectionist(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/perfectionist/setup',
+      name: 'kaynooo/perfectionist/setup',
       ignores: [
         '**/*.md',
       ],

@@ -3,7 +3,7 @@ import type { TypedFlatConfigItem } from '../types'
 export function jsx(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/jsx/setup',
+      name: 'kaynooo/jsx/setup',
       files: [
         '**/*.?([cm])jsx',
         '**/*.?([cm])tsx',

@@ -3,7 +3,7 @@ import type { TypedFlatConfigItem } from '../types'
 export function disables(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/disables/scripts',
+      name: 'kaynooo/disables/scripts',
       files: [
         '**/scripts/**/*.?([cm])[jt]s?(x)',
       ],
@@ -14,7 +14,7 @@ export function disables(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/disables/cli',
+      name: 'kaynooo/disables/cli',
       files: [
         '**/cli/**/*.?([cm])[jt]s?(x)',
         '**/cli.?([cm])[jt]s?(x)',
@@ -25,7 +25,7 @@ export function disables(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/disables/bin',
+      name: 'kaynooo/disables/bin',
       files: [
         '**/bin/**/*',
         '**/bin.?([cm])[jt]s?(x)',
@@ -36,7 +36,7 @@ export function disables(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/disables/dts',
+      name: 'kaynooo/disables/dts',
       files: [
         '**/*.d.?([cm])ts',
       ],
@@ -47,7 +47,7 @@ export function disables(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/disables/cjs',
+      name: 'kaynooo/disables/cjs',
       files: [
         '**/*.js',
         '**/*.cjs',
@@ -57,7 +57,7 @@ export function disables(): TypedFlatConfigItem[] {
       },
     },
     {
-      name: 'antfu/disables/config-files',
+      name: 'kaynooo/disables/config-files',
       files: [
         '**/*.config.?([cm])[jt]s?(x)',
         '**/*.config.*.?([cm])[jt]s?(x)',

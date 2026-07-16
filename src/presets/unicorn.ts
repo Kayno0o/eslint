@@ -4,13 +4,13 @@ import { pluginUnicorn } from '../plugins'
 export function unicorn(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/unicorn/setup',
+      name: 'kaynooo/unicorn/setup',
       plugins: {
         unicorn: pluginUnicorn,
       },
     },
     {
-      name: 'antfu/unicorn/rules',
+      name: 'kaynooo/unicorn/rules',
       files: [
         '**/*.?([cm])[jt]s?(x)',
       ],

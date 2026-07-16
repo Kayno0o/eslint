@@ -4,7 +4,7 @@ import { pluginAntfu, pluginStylistic } from '../plugins'
 export function stylistic(): TypedFlatConfigItem[] {
   return [
     {
-      name: 'antfu/stylistic/rules',
+      name: 'kaynooo/stylistic/rules',
       ignores: [
         '**/*.md',
       ],
