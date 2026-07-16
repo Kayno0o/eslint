@@ -19,18 +19,7 @@ export function test(): TypedFlatConfigItem[] {
         '**/*.benchmark.?([cm])[jt]s?(x)',
       ],
       rules: {
-        'test/consistent-test-it': [
-          'error',
-          {
-            fn: 'it',
-            withinDescribe: 'it',
-          },
-        ],
-        'test/no-identical-title': 'error',
-        'test/no-import-node-test': 'error',
         'test/no-only-tests': 'error',
-        'test/prefer-hooks-in-order': 'error',
-        'test/prefer-lowercase-title': 'error',
         'antfu/no-top-level-await': 'off',
         'e18e/prefer-static-regex': 'off',
         'no-unused-expressions': 'off',
