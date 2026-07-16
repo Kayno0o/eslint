@@ -31,7 +31,7 @@ const GLOB_TS = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 
 export async function defineConfig(options: FactoryOptions = {}, ...userConfigs: UserConfig[]) {
   const {
-    strict = true,
+    strict = false,
     tsconfigPath = strict ? 'tsconfig.json' : undefined,
     astro: enableAstro = false,
     solid: enableSolid = false,
