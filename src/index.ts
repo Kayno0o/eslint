@@ -1,5 +1,5 @@
-import type { Rules } from '@antfu/eslint-config'
 import type { Linter } from 'eslint'
+import type { Rules } from './types'
 import arrayForeach from './rules/array-foreach'
 import maxStatementPerLine from './rules/max-statements-per-line'
 import noEmptyFirstLastLine from './rules/no-empty-first-last-line'

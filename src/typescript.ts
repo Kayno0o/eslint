@@ -1,32 +1,31 @@
-import type { Awaitable, OptionsConfig, OptionsFormatters, TypedFlatConfigItem } from '@antfu/eslint-config'
-import type { FlatConfigComposer } from 'eslint-flat-config-utils'
-import type { Linter } from 'eslint/universal'
-import antfu from '@antfu/eslint-config'
+import type { Linter } from 'eslint'
+import type { Awaitable, OptionsFormatters, TypedFlatConfigItem } from './types'
 import merge from 'lodash.merge'
+import { defineConfig } from './factory'
 import { commonRules, kaynoooPlugin, typeAwareRules } from './index'
 
 export default async function typescript(options?: {
   formatters?: OptionsFormatters
-  mergeOptions?: OptionsConfig & Omit<TypedFlatConfigItem, 'files'>
+  mergeOptions?: Partial<TypedFlatConfigItem>
   strict?: boolean
-}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]): Promise<Linter.Config[]> {
-  return antfu(
-    merge(
-      {
-        ignores: ['**/*.md'],
-        plugins: { kaynooo: kaynoooPlugin },
-        formatters: options?.formatters,
-        typescript: options?.strict
-          ? {
-            tsconfigPath: 'tsconfig.json',
-            filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.vue'],
-          }
-          : true,
-        rules: commonRules,
-      },
-      options?.mergeOptions,
-    ),
-    options?.strict
+}, ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | Linter.Config[]>[]) {
+  const strict = options?.strict ?? false
+
+  return defineConfig(
+    {
+      strict,
+      tsconfigPath: strict ? 'tsconfig.json' : undefined,
+      formatters: options?.formatters,
+      overrides: merge(
+        {
+          ignores: ['**/*.md'],
+          plugins: { kaynooo: kaynoooPlugin },
+          rules: commonRules,
+        },
+        options?.mergeOptions,
+      ),
+    },
+    strict
       ? {
         files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
         rules: typeAwareRules,
