@@ -3,6 +3,7 @@ import process from 'node:process'
 import { parserTs, pluginAntfu, pluginTs } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
+const ignoresMarkdownCode = ['**/*.md/**']
 
 export interface TypescriptOptions {
   strict?: boolean
@@ -143,6 +144,7 @@ export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem
       {
         name: 'kaynooo/typescript/type-aware-parser',
         files: filesTypeAware,
+        ignores: ignoresMarkdownCode,
         languageOptions: {
           parser: parserTs,
           parserOptions: {
@@ -156,6 +158,7 @@ export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem
       {
         name: 'kaynooo/typescript/rules-type-aware',
         files: filesTypeAware,
+        ignores: ignoresMarkdownCode,
         rules: {
           'dot-notation': 'off',
           'no-implied-eval': 'off',

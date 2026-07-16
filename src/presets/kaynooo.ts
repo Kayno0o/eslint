@@ -92,6 +92,7 @@ export function kaynoooTypeAware(files: string[]): TypedFlatConfigItem[] {
     {
       name: 'kaynooo/rules-type-aware',
       files,
+      ignores: ['**/*.md/**'],
       rules: {
         'ts/strict-boolean-expressions': 'error',
         'ts/no-unsafe-assignment': 'off',
