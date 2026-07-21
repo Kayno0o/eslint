@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install project deps
-        run: bun install --frozen-lockfile --production
+        run: bun install --frozen-lockfile
 
       - name: Build package files
         run: bun run build
