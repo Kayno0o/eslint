@@ -58,5 +58,19 @@ tester.run('array-foreach', rule, {
       errors: [{ messageId: 'preferForOf' }],
       output: 'for (const x of obj.arr) { use(x) }',
     },
+
+    // arrow expression body → wrap the loop in a block
+    {
+      code: 'createEffect(on(() => data.latest, () => resets.forEach(reset => reset())))',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'createEffect(on(() => data.latest, () => { for (const reset of resets) { reset() } }))',
+    },
+
+    // not in statement position (call argument) → report without autofix
+    {
+      code: 'wrap(arr.forEach(x => use(x)))',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
   ],
 })

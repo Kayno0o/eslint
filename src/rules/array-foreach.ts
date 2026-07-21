@@ -24,11 +24,13 @@ const rule: Rule.RuleModule = {
         const params = callback.params
         const oneParam = params.length === 1 && params[0].type === 'Identifier'
         const twoParams = params.length === 2 && params[0].type === 'Identifier' && params[1].type === 'Identifier'
+        const inStatementPosition = node.parent.type === 'ExpressionStatement'
+        const inArrowBody = node.parent.type === 'ArrowFunctionExpression' && node.parent.body === node
 
         context.report({
           node,
           messageId: 'preferForOf',
-          fix: (oneParam || twoParams)
+          fix: ((inStatementPosition || inArrowBody) && (oneParam || twoParams))
             ? (fixer) => {
               const array = sourceCode.getText(node.callee.type === 'MemberExpression' ? node.callee.object : node.callee)
               const param = sourceCode.getText(params[0])
@@ -37,13 +39,11 @@ const rule: Rule.RuleModule = {
                 ? sourceCode.getText(bodyNode)
                 : `{ ${sourceCode.getText(bodyNode)} }`
 
-              if (twoParams) {
-                const indexParam = sourceCode.getText(params[1])
+              const loop = twoParams
+                ? `for (const [${sourceCode.getText(params[1])}, ${param}] of ${array}.entries()) ${body}`
+                : `for (const ${param} of ${array}) ${body}`
 
-                return fixer.replaceText(node, `for (const [${indexParam}, ${param}] of ${array}.entries()) ${body}`)
-              }
-
-              return fixer.replaceText(node, `for (const ${param} of ${array}) ${body}`)
+              return fixer.replaceText(node, inArrowBody ? `{ ${loop} }` : loop)
             }
             : null,
         })
