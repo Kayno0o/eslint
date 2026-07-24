@@ -1,7 +1,6 @@
 import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from './types'
 import { composer } from 'eslint-flat-config-utils'
 import { astro } from './presets/astro'
-import { command } from './presets/command'
 import { comments } from './presets/comments'
 import { disables } from './presets/disables'
 import { e18e } from './presets/e18e'
@@ -46,7 +45,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     ignores(),
     javascript(),
     comments(),
-    command(),
     perfectionist(),
     jsdoc(),
     imports(),
