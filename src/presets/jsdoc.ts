@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginJsdoc } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function jsdoc(): TypedFlatConfigItem[] {
+export async function jsdoc(): Promise<TypedFlatConfigItem[]> {
+  const pluginJsdoc = await interopDefault(import('eslint-plugin-jsdoc'))
+
   return [
     {
       name: 'kaynooo/jsdoc/setup',

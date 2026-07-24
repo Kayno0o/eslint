@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginRegexp } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function regexp(): TypedFlatConfigItem[] {
+export async function regexp(): Promise<TypedFlatConfigItem[]> {
+  const pluginRegexp = await interopDefault(import('eslint-plugin-regexp'))
+
   return [
     {
       name: 'kaynooo/regexp/rules',

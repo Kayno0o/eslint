@@ -1,7 +1,12 @@
 import type { TypedFlatConfigItem } from '../types'
-import { parserYaml, pluginYaml } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function yaml(): TypedFlatConfigItem[] {
+export async function yaml(): Promise<TypedFlatConfigItem[]> {
+  const [parserYaml, pluginYaml] = await Promise.all([
+    import('yaml-eslint-parser'),
+    interopDefault(import('eslint-plugin-yml')),
+  ])
+
   return [
     {
       name: 'kaynooo/yaml/setup',

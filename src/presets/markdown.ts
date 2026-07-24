@@ -1,7 +1,16 @@
 import type { TypedFlatConfigItem } from '../types'
-import { markdownProcessor, pluginMarkdown } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function markdown(): TypedFlatConfigItem[] {
+export async function markdown(): Promise<TypedFlatConfigItem[]> {
+  const [pluginMarkdown, { mergeProcessors, processorPassThrough }] = await Promise.all([
+    interopDefault(import('@eslint/markdown')),
+    import('eslint-merge-processors'),
+  ])
+  const markdownProcessor = mergeProcessors([
+    pluginMarkdown.processors.markdown,
+    processorPassThrough,
+  ])
+
   return [
     {
       name: 'kaynooo/markdown/setup',

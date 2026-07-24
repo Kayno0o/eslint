@@ -1,6 +1,6 @@
 import type { TypedFlatConfigItem } from '../types'
 import process from 'node:process'
-import { parserTs, pluginAntfu, pluginTs } from '../plugins'
+import { interopDefault } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 const ignoresMarkdownCode = ['**/*.md/**']
@@ -11,8 +11,13 @@ export interface TypescriptOptions {
   filesTypeAware?: string[]
 }
 
-export function typescript(options: TypescriptOptions = {}): TypedFlatConfigItem[] {
+export async function typescript(options: TypescriptOptions = {}): Promise<TypedFlatConfigItem[]> {
   const { strict = false, tsconfigPath, filesTypeAware = files } = options
+  const [parserTs, pluginAntfu, pluginTs] = await Promise.all([
+    interopDefault(import('@typescript-eslint/parser')),
+    interopDefault(import('eslint-plugin-antfu')),
+    interopDefault(import('@typescript-eslint/eslint-plugin')),
+  ])
   const configs: TypedFlatConfigItem[] = [
     {
       name: 'kaynooo/typescript/setup',

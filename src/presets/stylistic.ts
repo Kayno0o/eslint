@@ -1,7 +1,12 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginAntfu, pluginStylistic } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function stylistic(): TypedFlatConfigItem[] {
+export async function stylistic(): Promise<TypedFlatConfigItem[]> {
+  const [pluginAntfu, pluginStylistic] = await Promise.all([
+    interopDefault(import('eslint-plugin-antfu')),
+    interopDefault(import('@stylistic/eslint-plugin')),
+  ])
+
   return [
     {
       name: 'kaynooo/stylistic/rules',

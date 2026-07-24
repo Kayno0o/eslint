@@ -1,7 +1,12 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginAntfu, pluginImport } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function imports(): TypedFlatConfigItem[] {
+export async function imports(): Promise<TypedFlatConfigItem[]> {
+  const [pluginAntfu, pluginImport] = await Promise.all([
+    interopDefault(import('eslint-plugin-antfu')),
+    interopDefault(import('eslint-plugin-import-lite')),
+  ])
+
   return [
     {
       name: 'kaynooo/imports/rules',

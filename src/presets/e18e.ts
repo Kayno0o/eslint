@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginE18e } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function e18e(): TypedFlatConfigItem[] {
+export async function e18e(): Promise<TypedFlatConfigItem[]> {
+  const pluginE18e = await interopDefault(import('@e18e/eslint-plugin'))
+
   return [
     {
       name: 'kaynooo/e18e/rules',

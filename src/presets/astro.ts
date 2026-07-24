@@ -1,9 +1,13 @@
 import type { TypedFlatConfigItem } from '../types'
-import * as parserAstro from 'astro-eslint-parser'
-import pluginAstro from 'eslint-plugin-astro'
-import { parserTs } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function astro(): TypedFlatConfigItem[] {
+export async function astro(): Promise<TypedFlatConfigItem[]> {
+  const [parserAstro, pluginAstro, parserTs] = await Promise.all([
+    import('astro-eslint-parser'),
+    interopDefault(import('eslint-plugin-astro')),
+    interopDefault(import('@typescript-eslint/parser')),
+  ])
+
   return [
     {
       name: 'kaynooo/astro/setup',

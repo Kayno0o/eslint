@@ -1,30 +1,13 @@
 import type { Linter } from 'eslint'
-import markdown from '@eslint/markdown'
-import { mergeProcessors, processorPassThrough } from 'eslint-merge-processors'
+import type { Awaitable } from './types'
 import globals from 'globals'
-import * as parserToml from 'toml-eslint-parser'
-import * as parserYaml from 'yaml-eslint-parser'
 
-export { parserToml, parserYaml }
-export { default as pluginE18e } from '@e18e/eslint-plugin'
+/** Resolve a dynamically imported module to its default export, tolerating CJS/ESM interop. */
+export async function interopDefault<T>(m: Awaitable<T>): Promise<T extends { default: infer U } ? U : T> {
+  const resolved = await m as { default?: unknown }
 
-export { default as pluginComments } from '@eslint-community/eslint-plugin-eslint-comments'
-export { default as pluginMarkdown } from '@eslint/markdown'
-export { default as pluginStylistic } from '@stylistic/eslint-plugin'
-export { default as pluginTs } from '@typescript-eslint/eslint-plugin'
-export { default as parserTs } from '@typescript-eslint/parser'
-export { default as pluginAntfu } from 'eslint-plugin-antfu'
-export { default as pluginFormat } from 'eslint-plugin-format'
-export { default as pluginImport } from 'eslint-plugin-import-lite'
-export { default as pluginJsdoc } from 'eslint-plugin-jsdoc'
-export { default as pluginJsonc } from 'eslint-plugin-jsonc'
-export { default as pluginTest } from 'eslint-plugin-no-only-tests'
-export { default as pluginPerfectionist } from 'eslint-plugin-perfectionist'
-export { default as pluginRegexp } from 'eslint-plugin-regexp'
-export { default as pluginToml } from 'eslint-plugin-toml'
-export { default as pluginUnicorn } from 'eslint-plugin-unicorn'
-export { default as pluginUnusedImports } from 'eslint-plugin-unused-imports'
-export { default as pluginYaml } from 'eslint-plugin-yml'
+  return (resolved.default ?? resolved) as T extends { default: infer U } ? U : T
+}
 
 export const combinedGlobals = {
   ...globals.browser,
@@ -49,8 +32,3 @@ export const parserPlain: Linter.Parser = {
     visitorKeys: { Program: [] },
   }),
 }
-
-export const markdownProcessor = mergeProcessors([
-  markdown.processors.markdown,
-  processorPassThrough,
-])

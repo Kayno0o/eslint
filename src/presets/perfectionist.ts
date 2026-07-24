@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginPerfectionist } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function perfectionist(): TypedFlatConfigItem[] {
+export async function perfectionist(): Promise<TypedFlatConfigItem[]> {
+  const pluginPerfectionist = await interopDefault(import('eslint-plugin-perfectionist'))
+
   return [
     {
       name: 'kaynooo/perfectionist/setup',

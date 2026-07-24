@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginUnicorn } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function unicorn(): TypedFlatConfigItem[] {
+export async function unicorn(): Promise<TypedFlatConfigItem[]> {
+  const pluginUnicorn = await interopDefault(import('eslint-plugin-unicorn'))
+
   return [
     {
       name: 'kaynooo/unicorn/setup',

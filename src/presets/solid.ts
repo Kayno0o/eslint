@@ -1,8 +1,12 @@
 import type { TypedFlatConfigItem } from '../types'
-import pluginSolid from 'eslint-plugin-solid'
-import { parserTs } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function solid(): TypedFlatConfigItem[] {
+export async function solid(): Promise<TypedFlatConfigItem[]> {
+  const [pluginSolid, parserTs] = await Promise.all([
+    interopDefault(import('eslint-plugin-solid')),
+    interopDefault(import('@typescript-eslint/parser')),
+  ])
+
   return [
     {
       name: 'kaynooo/solid/setup',

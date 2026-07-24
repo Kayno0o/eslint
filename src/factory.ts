@@ -1,5 +1,7 @@
 import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from './types'
+import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
+import { detectExtensions } from './detect'
 import { astro } from './presets/astro'
 import { comments } from './presets/comments'
 import { disables } from './presets/disables'
@@ -63,7 +65,19 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   if (enableSolid)
     configs.push(solid())
 
-  configs.push(jsonc(), yaml(), toml(), markdown())
+  const present = detectExtensions(process.cwd(), ['.json', '.json5', '.jsonc', '.yaml', '.yml', '.toml', '.md'])
+
+  if (present.has('.json') || present.has('.json5') || present.has('.jsonc'))
+    configs.push(jsonc())
+
+  if (present.has('.yaml') || present.has('.yml'))
+    configs.push(yaml())
+
+  if (present.has('.toml'))
+    configs.push(toml())
+
+  if (present.has('.md'))
+    configs.push(markdown())
 
   if (formattersEnabled(formattersOptions))
     configs.push(formatters(formattersOptions))

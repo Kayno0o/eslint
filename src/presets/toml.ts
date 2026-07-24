@@ -1,7 +1,12 @@
 import type { TypedFlatConfigItem } from '../types'
-import { parserToml, pluginToml } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function toml(): TypedFlatConfigItem[] {
+export async function toml(): Promise<TypedFlatConfigItem[]> {
+  const [parserToml, pluginToml] = await Promise.all([
+    import('toml-eslint-parser'),
+    interopDefault(import('eslint-plugin-toml')),
+  ])
+
   return [
     {
       name: 'kaynooo/toml/setup',

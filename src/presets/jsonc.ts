@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginJsonc } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function jsonc(): TypedFlatConfigItem[] {
+export async function jsonc(): Promise<TypedFlatConfigItem[]> {
+  const pluginJsonc = await interopDefault(import('eslint-plugin-jsonc'))
+
   return [
     {
       name: 'kaynooo/jsonc/setup',

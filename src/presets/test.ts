@@ -1,7 +1,9 @@
 import type { TypedFlatConfigItem } from '../types'
-import { pluginTest } from '../plugins'
+import { interopDefault } from '../plugins'
 
-export function test(): TypedFlatConfigItem[] {
+export async function test(): Promise<TypedFlatConfigItem[]> {
+  const pluginTest = await interopDefault(import('eslint-plugin-no-only-tests'))
+
   return [
     {
       name: 'kaynooo/test/setup',

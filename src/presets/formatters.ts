@@ -1,6 +1,6 @@
 import type { Linter } from 'eslint'
 import type { OptionsFormatters, TypedFlatConfigItem } from '../types'
-import { parserPlain, pluginFormat } from '../plugins'
+import { interopDefault, parserPlain } from '../plugins'
 
 const GLOB_CSS = ['**/*.css', '**/*.{p,post}css']
 const GLOB_SCSS = ['**/*.scss']
@@ -18,12 +18,14 @@ export function formattersEnabled(options: OptionsFormatters | boolean | undefin
   return Object.values(options).some(Boolean)
 }
 
-export function formatters(options: OptionsFormatters | boolean = {}): TypedFlatConfigItem[] {
+export async function formatters(options: OptionsFormatters | boolean = {}): Promise<TypedFlatConfigItem[]> {
   const resolved: OptionsFormatters = options === true
     ? { css: true, html: true, markdown: true }
     : options === false
       ? {}
       : options
+
+  const pluginFormat = await interopDefault(import('eslint-plugin-format'))
 
   const base = {
     endOfLine: 'auto',
