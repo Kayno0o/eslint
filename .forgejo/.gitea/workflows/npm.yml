@@ -1,0 +1,41 @@
+name: Publish to Forgejo Package Registry
+
+permissions:
+  contents: read
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: alpine
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install project deps
+        run: bun install --frozen-lockfile
+
+      - name: Build package files
+        run: bun run build
+
+      - name: Configure npm authentication
+        run: |
+          echo "@kaynooo:registry=https://git.kaynooo.fr/api/packages/kaynooo/npm/" > ~/.npmrc
+          echo "//git.kaynooo.fr/api/packages/kaynooo/npm/:_authToken=${PACKAGE_TOKEN}" >> ~/.npmrc
+        env:
+          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Publish to Forgejo npm registry
+        run: bun publish --access public
+        env:
+          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Generate changelog
+        run: bun x @kaynooo/changelogitea@latest
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
