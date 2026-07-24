@@ -75,7 +75,6 @@ export function markdown(): TypedFlatConfigItem[] {
         'no-unused-expressions': 'off',
         'no-unused-labels': 'off',
         'no-unused-vars': 'off',
-        'node/prefer-global/process': 'off',
         'style/comma-dangle': 'off',
         'style/eol-last': 'off',
         'style/padding-line-between-statements': 'off',

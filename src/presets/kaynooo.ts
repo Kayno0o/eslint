@@ -35,7 +35,6 @@ export function kaynooo(): TypedFlatConfigItem[] {
         'no-implicit-coercion': ['error', { number: true, boolean: true, string: true, disallowTemplateShorthand: true }],
         'no-lonely-if': ['error'],
 
-        'node/prefer-global/process': 'off',
         'operator-assignment': ['error', 'always'],
 
         'style/array-bracket-newline': ['warn', 'consistent'],

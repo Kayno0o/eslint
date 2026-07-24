@@ -14,7 +14,6 @@ import { jsonc } from './presets/jsonc'
 import { jsx } from './presets/jsx'
 import { kaynooo, kaynoooTypeAware } from './presets/kaynooo'
 import { markdown } from './presets/markdown'
-import { node } from './presets/node'
 import { perfectionist } from './presets/perfectionist'
 import { regexp } from './presets/regexp'
 import { solid } from './presets/solid'
@@ -49,7 +48,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     comments(),
     command(),
     perfectionist(),
-    node(),
     jsdoc(),
     imports(),
     e18e(),
