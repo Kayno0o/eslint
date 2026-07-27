@@ -2,6 +2,7 @@ import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from 
 import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
 import { detectExtensions } from './detect'
+import { a11y, a11yAstro } from './presets/a11y'
 import { astro } from './presets/astro'
 import { comments } from './presets/comments'
 import { disables } from './presets/disables'
@@ -35,6 +36,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     tsconfigPath = strict ? 'tsconfig.json' : undefined,
     astro: enableAstro = false,
     solid: enableSolid = false,
+    a11y: enableA11y = false,
     overrides,
   } = options
 
@@ -64,6 +66,13 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   if (enableSolid)
     configs.push(solid())
+
+  if (enableA11y) {
+    configs.push(a11y())
+
+    if (enableAstro)
+      configs.push(a11yAstro())
+  }
 
   const present = detectExtensions(process.cwd(), ['.json', '.json5', '.jsonc', '.yaml', '.yml', '.toml', '.md'])
 

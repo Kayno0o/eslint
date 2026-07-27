@@ -7,6 +7,14 @@ declare module 'eslint-plugin-no-only-tests' {
   export default plugin
 }
 
+declare module 'eslint-plugin-jsx-a11y' {
+  import type { ESLint } from 'eslint'
+
+  const plugin: ESLint.Plugin
+
+  export default plugin
+}
+
 declare module '@e18e/eslint-plugin'
 declare module '@eslint-community/eslint-plugin-eslint-comments'
 declare module 'eslint-plugin-command'

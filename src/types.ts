@@ -58,6 +58,8 @@ export interface FactoryOptions {
   astro?: boolean
   /** Enable the Solid preset. */
   solid?: boolean
+  /** Enable the accessibility preset (`jsx-a11y`) on JSX files, plus `.astro` when `astro` is on. */
+  a11y?: boolean
   /** Enable the Tailwind preset. Defaults to on when `astro` or `solid` is on. */
   tailwind?: TailwindOptions | boolean
   /** Flat-config fields merged into the trailing overrides item. */
