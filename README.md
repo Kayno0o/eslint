@@ -25,11 +25,18 @@ Part of the ruleset has moved to [oxlint](https://oxc.rs). The `kaynooo` bin run
 
 The handover is derived from your resolved ESLint config, not from a config you maintain: the rules in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts) are turned off in ESLint and written to `node_modules/.cache/kaynooo/oxlintrc.json`, with the options ESLint resolved for them. Rules stay in ESLint when:
 
-- they have no oxlint equivalent - every `style/*`, `regexp/*`, `perfectionist/*`, `solid/*`, `better-tailwindcss/*`, `e18e/*`, `antfu/*` and `kaynooo/*` rule, plus everything for JSON, YAML, TOML, Markdown and CSS, which oxlint does not read
+- they have no oxlint equivalent - every `style/*`, `regexp/*`, `perfectionist/*`, `solid/*`, `better-tailwindcss/*`, `e18e/*`, `antfu/*`, `eslint-comments/*`, `unused-imports/*` and `kaynooo/*` rule, plus everything for JSON, YAML, TOML, Markdown and CSS, which oxlint does not read
 - they need type information - oxlint does them through `oxlint-tsgolint`, which is not wired up yet
+- we enable them for part of the tree with options that differ per file type, like `ts/ban-ts-comment`
 - **you configured them yourself**, anywhere in your config - your scoping and options are not ours to translate, so the rule keeps running under ESLint alone
 
+A rule we scope to a file family is handed over scoped: the `jsx-a11y/*` rules go into an oxlint `overrides` block for `**/*.jsx` and `**/*.tsx`, and are turned off in ESLint for those files only. The `astro/jsx-a11y/*` rules stay in ESLint, since oxlint reads `<script>` blocks in `.astro` but not the template.
+
 Markdown code blocks keep the full ESLint ruleset, since oxlint does not read `.md`.
+
+### Why not `eslint-plugin-oxlint`
+
+It turns off rules by their upstream names, and our presets alias the plugins (`ts/*` rather than `@typescript-eslint/*`, `eslint-plugin-import-lite` under `import/*`), so its disables miss. It also expects you to maintain `.oxlintrc.json` and mirror it into ESLint, which is the opposite of what we want: here the ESLint config is the single source and the oxlint config is generated from it.
 
 Set `oxlint: false` to keep everything in ESLint. The bin then only runs ESLint, so `eslint` in your scripts keeps working too.
 

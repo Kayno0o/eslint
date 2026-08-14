@@ -1,14 +1,21 @@
 import type { Linter } from 'eslint'
 import type { TypedFlatConfigItem } from '../types'
-import { LEDGER, toOxlintOptions, toOxlintPlugin, toOxlintRule } from './ledger'
+import type { OxlintScope } from './ledger'
+import { LEDGER, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope } from './ledger'
 
-/** Name of the flat config item that hands the ledger over to oxlint. Its presence is what tells the bin to run oxlint. */
+/** Name the flat config items handing the ledger over to oxlint share. Their presence is what tells the bin to run oxlint. */
 export const OXLINT_CONFIG_NAME = 'kaynooo/oxlint'
+
+export interface OxlintOverride {
+  files: string[]
+  rules: OxlintConfig['rules']
+}
 
 export interface OxlintConfig {
   categories: Record<string, string>
   plugins: string[]
   rules: Record<string, string | [string, ...unknown[]]>
+  overrides?: OxlintOverride[]
 }
 
 type RuleEntry = [severity: string, ...options: unknown[]]
@@ -17,7 +24,9 @@ const ledger = new Set(LEDGER)
 
 const severity = (value: unknown): string => (['off', 'warn', 'error'][Number(value)] ?? String(value))
 
-const ours = (name?: string): boolean => name != null && name.startsWith('kaynooo/') && name !== 'kaynooo/overrides' && name !== OXLINT_CONFIG_NAME
+const handover = (name?: string): boolean => name === OXLINT_CONFIG_NAME || (name?.startsWith(`${OXLINT_CONFIG_NAME}/`) ?? false)
+
+const ours = (name?: string): boolean => name != null && name.startsWith('kaynooo/') && name !== 'kaynooo/overrides' && !handover(name)
 
 /** Files oxlint never reads: non-JS languages, and the JS our markdown processor extracts from code blocks. */
 const UNREAD_BY_OXLINT = /\.md\/|\.(?:md|json5?|jsonc|ya?ml|toml|css|less|s[ac]ss|html?|xml|svg|gql|graphql)$/
@@ -39,7 +48,7 @@ function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
   const consumerOwned = new Set<string>()
 
   for (const config of configs) {
-    if (config.name === OXLINT_CONFIG_NAME || unreadByOxlint(config.files))
+    if (handover(config.name) || unreadByOxlint(config.files))
       continue
 
     for (const [rule, value] of Object.entries(config.rules ?? {})) {
@@ -70,24 +79,32 @@ function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
   return resolved
 }
 
-/** Flat config item turning the ledger off in ESLint. Markdown code blocks keep them, since oxlint does not read `.md`. */
-export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigItem | undefined {
-  const resolved = resolveLedger(configs)
+/**
+ * Flat config items turning the ledger off in ESLint, one per scope so a rule only goes quiet where oxlint picks it
+ * up. Markdown code blocks keep them all, since oxlint does not read `.md`.
+ */
+export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigItem[] {
+  const scoped = new Map<OxlintScope | undefined, Linter.RulesRecord>()
 
-  if (resolved.size === 0)
-    return undefined
+  for (const rule of resolveLedger(configs).keys()) {
+    const scope = toOxlintScope(rule)
+    const rules = scoped.get(scope) ?? {}
 
-  const rules: Linter.RulesRecord = {}
-
-  for (const rule of resolved.keys())
     rules[rule] = 'off'
+    scoped.set(scope, rules)
+  }
 
-  return { name: OXLINT_CONFIG_NAME, ignores: ['**/*.md/**'], rules }
+  return [...scoped].map(([scope, rules]) => ({
+    name: scope == null ? OXLINT_CONFIG_NAME : `${OXLINT_CONFIG_NAME}/${scope.name}`,
+    ...(scope == null ? {} : { files: scope.files }),
+    ignores: ['**/*.md/**'],
+    rules,
+  }))
 }
 
 /** Build the `.oxlintrc.json` matching a resolved ESLint config. Returns nothing when the config kept every rule in ESLint. */
 export function buildOxlintConfig(configs: TypedFlatConfigItem[]): OxlintConfig | undefined {
-  if (!configs.some(config => config.name === OXLINT_CONFIG_NAME))
+  if (!configs.some(config => handover(config.name)))
     return undefined
 
   const resolved = resolveLedger(configs)
@@ -97,13 +114,31 @@ export function buildOxlintConfig(configs: TypedFlatConfigItem[]): OxlintConfig 
 
   const plugins = new Set<string>()
   const rules: OxlintConfig['rules'] = {}
+  const overrides = new Map<OxlintScope, OxlintOverride>()
 
   for (const [rule, [level, ...options]] of [...resolved].sort(([a], [b]) => a.localeCompare(b))) {
     const translated = toOxlintOptions(rule, options)
+    const entry: string | [string, ...unknown[]] = translated.length === 0 ? level : [level, ...translated]
+    const scope = toOxlintScope(rule)
 
     plugins.add(toOxlintPlugin(rule))
-    rules[toOxlintRule(rule)] = translated.length === 0 ? level : [level, ...translated]
+
+    if (scope == null) {
+      rules[toOxlintRule(rule)] = entry
+
+      continue
+    }
+
+    const override = overrides.get(scope) ?? { files: scope.files, rules: {} }
+
+    override.rules[toOxlintRule(rule)] = entry
+    overrides.set(scope, override)
   }
 
-  return { categories: { correctness: 'off' }, plugins: [...plugins].sort(), rules }
+  return {
+    categories: { correctness: 'off' },
+    plugins: [...plugins].sort(),
+    rules,
+    ...(overrides.size === 0 ? {} : { overrides: [...overrides.values()] }),
+  }
 }

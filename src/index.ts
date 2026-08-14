@@ -1,5 +1,5 @@
 export { defineConfig as default, defineConfig } from './factory'
-export type { OxlintConfig } from './oxlint/config'
+export type { OxlintConfig, OxlintOverride } from './oxlint/config'
 export { buildOxlintConfig } from './oxlint/config'
 export { LEDGER } from './oxlint/ledger'
 export { kaynoooPlugin } from './plugin'

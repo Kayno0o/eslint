@@ -62,6 +62,7 @@ export const LEDGER: string[] = [
   'no-unexpected-multiline',
   'no-unmodified-loop-condition',
   'no-unneeded-ternary',
+  'no-unreachable-loop',
   'no-unsafe-finally',
   'no-useless-call',
   'no-useless-catch',
@@ -104,6 +105,42 @@ export const LEDGER: string[] = [
   'jsdoc/require-property-description',
   'jsdoc/require-property-name',
   'jsdoc/require-returns-description',
+
+  'jsx-a11y/alt-text',
+  'jsx-a11y/anchor-ambiguous-text',
+  'jsx-a11y/anchor-has-content',
+  'jsx-a11y/anchor-is-valid',
+  'jsx-a11y/aria-activedescendant-has-tabindex',
+  'jsx-a11y/aria-props',
+  'jsx-a11y/aria-proptypes',
+  'jsx-a11y/aria-role',
+  'jsx-a11y/aria-unsupported-elements',
+  'jsx-a11y/autocomplete-valid',
+  'jsx-a11y/click-events-have-key-events',
+  'jsx-a11y/heading-has-content',
+  'jsx-a11y/html-has-lang',
+  'jsx-a11y/iframe-has-title',
+  'jsx-a11y/img-redundant-alt',
+  'jsx-a11y/interactive-supports-focus',
+  'jsx-a11y/label-has-associated-control',
+  'jsx-a11y/lang',
+  'jsx-a11y/media-has-caption',
+  'jsx-a11y/mouse-events-have-key-events',
+  'jsx-a11y/no-access-key',
+  'jsx-a11y/no-aria-hidden-on-focusable',
+  'jsx-a11y/no-autofocus',
+  'jsx-a11y/no-distracting-elements',
+  'jsx-a11y/no-interactive-element-to-noninteractive-role',
+  'jsx-a11y/no-noninteractive-element-interactions',
+  'jsx-a11y/no-noninteractive-element-to-interactive-role',
+  'jsx-a11y/no-noninteractive-tabindex',
+  'jsx-a11y/no-redundant-roles',
+  'jsx-a11y/no-static-element-interactions',
+  'jsx-a11y/prefer-tag-over-role',
+  'jsx-a11y/role-has-required-aria-props',
+  'jsx-a11y/role-supports-aria-props',
+  'jsx-a11y/scope',
+  'jsx-a11y/tabindex-no-positive',
 
   'ts/adjacent-overload-signatures',
   'ts/array-type',
@@ -160,6 +197,23 @@ export const LEDGER: string[] = [
 /** Our plugin aliases mapped onto the oxlint plugin that implements them. */
 const PLUGIN_ALIASES: Record<string, string> = {
   ts: 'typescript',
+}
+
+export interface OxlintScope {
+  name: string
+  files: string[]
+}
+
+/**
+ * Rules our presets enable for part of the tree only. Both linters are held to the globs below, so a file oxlint
+ * skips keeps the rule in ESLint. Extglobs are out: oxlint matches `overrides.files` literally.
+ */
+const SCOPES: [prefix: string, scope: OxlintScope][] = [
+  ['jsx-a11y/', { name: 'jsx', files: ['**/*.jsx', '**/*.tsx'] }],
+]
+
+export function toOxlintScope(rule: string): OxlintScope | undefined {
+  return SCOPES.find(([prefix]) => rule.startsWith(prefix))?.[1]
 }
 
 /** Rule options ESLint and oxlint spell differently. */

@@ -10,23 +10,46 @@ import { buildOxlintConfig, OXLINT_CONFIG_NAME } from '../src/oxlint/config'
 import { LEDGER } from '../src/oxlint/ledger'
 
 const handoff = (configs: TypedFlatConfigItem[]) => configs.find(config => config.name === OXLINT_CONFIG_NAME)
+const handoffs = (configs: TypedFlatConfigItem[]) => configs.filter(config => config.name?.startsWith(OXLINT_CONFIG_NAME))
+const disabled = (configs: TypedFlatConfigItem[]) => handoffs(configs).flatMap(config => Object.keys(config.rules ?? {}))
 
 describe('ledger handoff', () => {
   it('turns the handed-over rules off in eslint and on in oxlint', async () => {
-    const configs = await defineConfig({ strict: true })
-    const disabled = Object.keys(handoff(configs)?.rules ?? {})
+    const configs = await defineConfig({ strict: true, a11y: true })
+    const off = disabled(configs)
     const oxlint = buildOxlintConfig(configs)
+    const on = [...Object.keys(oxlint?.rules ?? {}), ...(oxlint?.overrides ?? []).flatMap(o => Object.keys(o.rules))]
 
-    expect(disabled.length).toBeGreaterThan(0)
-    expect(Object.values(handoff(configs)?.rules ?? {})).toEqual(disabled.map(() => 'off'))
-    expect(Object.keys(oxlint?.rules ?? {})).toHaveLength(disabled.length)
-    expect(disabled.every(rule => LEDGER.includes(rule))).toBe(true)
+    expect(off.length).toBeGreaterThan(0)
+    expect(handoffs(configs).flatMap(config => Object.values(config.rules ?? {}))).toEqual(off.map(() => 'off'))
+    expect(on).toHaveLength(off.length)
+    expect(off.every(rule => LEDGER.includes(rule))).toBe(true)
   })
 
   it('keeps markdown code blocks on eslint', async () => {
+    const configs = await defineConfig({ a11y: true })
+
+    expect(handoffs(configs)).not.toBeEmpty()
+    expect(handoffs(configs).every(config => config.ignores?.includes('**/*.md/**'))).toBe(true)
+  })
+
+  it('limits the a11y rules to jsx on both sides', async () => {
+    const configs = await defineConfig({ a11y: true })
+    const scoped = configs.find(config => config.name === `${OXLINT_CONFIG_NAME}/jsx`)
+    const override = buildOxlintConfig(configs)?.overrides?.[0]
+
+    expect(scoped?.files).toEqual(['**/*.jsx', '**/*.tsx'])
+    expect(Object.keys(scoped?.rules ?? {}).every(rule => rule.startsWith('jsx-a11y/'))).toBe(true)
+    expect(override?.files).toEqual(['**/*.jsx', '**/*.tsx'])
+    expect(override?.rules['jsx-a11y/alt-text']).toBe('error')
+    expect(buildOxlintConfig(configs)?.rules['jsx-a11y/alt-text']).toBeUndefined()
+  })
+
+  it('leaves the a11y rules alone when a11y is off', async () => {
     const configs = await defineConfig()
 
-    expect(handoff(configs)?.ignores).toEqual(['**/*.md/**'])
+    expect(configs.find(config => config.name === `${OXLINT_CONFIG_NAME}/jsx`)).toBeUndefined()
+    expect(buildOxlintConfig(configs)?.overrides).toBeUndefined()
   })
 
   it('carries the options eslint resolved, not the rule defaults', async () => {
@@ -52,9 +75,9 @@ describe('ledger handoff', () => {
 
 describe('opting out', () => {
   it('keeps every rule in eslint when oxlint is off', async () => {
-    const configs = await defineConfig({ oxlint: false })
+    const configs = await defineConfig({ oxlint: false, a11y: true })
 
-    expect(handoff(configs)).toBeUndefined()
+    expect(handoffs(configs)).toBeEmpty()
     expect(buildOxlintConfig(configs)).toBeUndefined()
   })
 
@@ -80,17 +103,36 @@ describe('opting out', () => {
 
 describe('generated config', () => {
   it('is accepted by oxlint', async () => {
-    const oxlint = buildOxlintConfig(await defineConfig({ strict: true }))
+    const oxlint = buildOxlintConfig(await defineConfig({ strict: true, a11y: true }))
     const dir = mkdtempSync(join(tmpdir(), 'kaynooo-oxlint-'))
     const configPath = join(dir, 'oxlintrc.json')
     const bin = join(dirname(createRequire(import.meta.url).resolve('oxlint/package.json')), 'bin/oxlint')
 
     writeFileSync(configPath, JSON.stringify(oxlint))
     writeFileSync(join(dir, 'probe.ts'), 'export const value: string[] = []\n')
+    writeFileSync(join(dir, 'probe.tsx'), 'export const Probe = () => <img alt="probe" src="probe.png" />\n')
 
     const result = spawnSync(bin, ['--config', configPath, dir], { encoding: 'utf8' })
 
     expect(result.stderr + result.stdout).not.toContain('Failed to parse')
     expect(result.status).toBe(0)
+  })
+
+  it('reports the a11y rules on jsx and nowhere else', async () => {
+    const oxlint = buildOxlintConfig(await defineConfig({ strict: true, a11y: true }))
+    const dir = mkdtempSync(join(tmpdir(), 'kaynooo-oxlint-'))
+    const configPath = join(dir, 'oxlintrc.json')
+    const bin = join(dirname(createRequire(import.meta.url).resolve('oxlint/package.json')), 'bin/oxlint')
+    const source = 'export const Probe = () => <img src="probe.png" />\n'
+
+    writeFileSync(configPath, JSON.stringify(oxlint))
+    writeFileSync(join(dir, 'scoped.tsx'), source)
+    writeFileSync(join(dir, 'unscoped.js'), source)
+
+    const output = spawnSync(bin, ['--config', configPath, dir], { encoding: 'utf8' }).stdout
+
+    expect(output).toContain('scoped.tsx')
+    expect(output).toContain('jsx-a11y(alt-text)')
+    expect(output).not.toContain('unscoped.js')
   })
 })

@@ -109,7 +109,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   const resolved = (await Promise.all(configs.map(async config => config))).flat()
   const user = (await Promise.all(userConfigs.map(async config => config))).flat() as TypedFlatConfigItem[]
-  const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : undefined
+  const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : []
 
-  return composer<TypedFlatConfigItem>(...resolved, ...user, ...(oxlint == null ? [] : [oxlint]))
+  return composer<TypedFlatConfigItem>(...resolved, ...user, ...oxlint)
 }
