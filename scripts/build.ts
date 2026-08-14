@@ -2,6 +2,7 @@ import pkg from '../package.json'
 
 const entrypoints = [
   'src/index.ts',
+  'src/bin.ts',
 ]
 
 const external = [

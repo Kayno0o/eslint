@@ -2,6 +2,7 @@ import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from 
 import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
 import { detectExtensions } from './detect'
+import { oxlintDisables } from './oxlint/config'
 import { a11y, a11yAstro } from './presets/a11y'
 import { astro } from './presets/astro'
 import { comments } from './presets/comments'
@@ -37,6 +38,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     astro: enableAstro = false,
     solid: enableSolid = false,
     a11y: enableA11y = false,
+    oxlint: enableOxlint = true,
     overrides,
   } = options
 
@@ -105,5 +107,9 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   if (overrides != null)
     configs.push([{ name: 'kaynooo/overrides', ...overrides }])
 
-  return composer<TypedFlatConfigItem>(...configs, ...userConfigs)
+  const resolved = (await Promise.all(configs.map(async config => config))).flat()
+  const user = (await Promise.all(userConfigs.map(async config => config))).flat() as TypedFlatConfigItem[]
+  const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : undefined
+
+  return composer<TypedFlatConfigItem>(...resolved, ...user, ...(oxlint == null ? [] : [oxlint]))
 }

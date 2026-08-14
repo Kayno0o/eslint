@@ -62,6 +62,8 @@ export interface FactoryOptions {
   a11y?: boolean
   /** Enable the Tailwind preset. Defaults to on when `astro` or `solid` is on. */
   tailwind?: TailwindOptions | boolean
+  /** Hand the migrated rules to oxlint, turning them off in ESLint. Requires running the `kaynooo` bin instead of `eslint`. */
+  oxlint?: boolean
   /** Flat-config fields merged into the trailing overrides item. */
   overrides?: Omit<TypedFlatConfigItem, 'files'>
 }
