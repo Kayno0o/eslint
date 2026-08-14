@@ -26,6 +26,7 @@ export async function yaml(): Promise<TypedFlatConfigItem[]> {
         'style/spaced-comment': 'off',
         'yaml/block-mapping': 'error',
         'yaml/block-sequence': 'error',
+        'yaml/no-boolean-key': 'error',
         'yaml/no-empty-key': 'error',
         'yaml/no-empty-sequence-entry': 'error',
         'yaml/no-irregular-whitespace': 'error',
