@@ -1,5 +1,6 @@
 import type { TypedFlatConfigItem } from '../types'
 import process from 'node:process'
+import { TYPE_AWARE_PARSER_NAME } from '../oxlint/config'
 import { interopDefault } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
@@ -147,7 +148,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
   if (strict && tsconfigPath != null && tsconfigPath !== '') {
     configs.push(
       {
-        name: 'kaynooo/typescript/type-aware-parser',
+        name: TYPE_AWARE_PARSER_NAME,
         files: filesTypeAware,
         ignores: ignoresMarkdownCode,
         languageOptions: {

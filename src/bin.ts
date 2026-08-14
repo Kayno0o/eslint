@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import type { OxlintConfig } from './oxlint/config'
 import type { Awaitable, TypedFlatConfigItem } from './types'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -8,7 +9,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
-import { buildOxlintConfig } from './oxlint/config'
+import { buildOxlintConfig, isTypeAware } from './oxlint/config'
 
 const CONFIG_FILES = ['eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', 'eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs']
 
@@ -109,15 +110,20 @@ function cacheDir(cwd: string): string {
  * Generate the oxlint config matching the project's ESLint config, cached against the config file's contents and
  * this build - loading a flat config costs about a second, and nothing else can change what it produces.
  */
-async function oxlintConfigPath(cwd: string, configFile: string): Promise<string | undefined> {
+async function oxlintConfigPath(cwd: string, configFile: string): Promise<string[] | undefined> {
   const dir = cacheDir(cwd)
   const configPath = join(dir, 'oxlintrc.json')
   const keyPath = join(dir, 'oxlintrc.key')
   const build = statSync(join(import.meta.dirname, 'index.js')).mtimeMs
   const key = createHash('sha256').update(`${build}\0${configFile}\0`).update(readFileSync(configFile)).digest('hex')
+  const args = (typeAware: boolean): string[] => ['--config', configPath, ...(typeAware ? ['--type-aware'] : [])]
 
-  if (existsSync(keyPath) && readFileSync(keyPath, 'utf8') === key)
-    return existsSync(configPath) ? configPath : undefined
+  if (existsSync(keyPath) && readFileSync(keyPath, 'utf8') === key) {
+    if (!existsSync(configPath) || readFileSync(configPath, 'utf8') === '')
+      return undefined
+
+    return args(isTypeAware(JSON.parse(readFileSync(configPath, 'utf8')) as OxlintConfig))
+  }
 
   const module = await import(pathToFileURL(configFile).href) as { default: Awaitable<TypedFlatConfigItem[]> }
   const oxlintConfig = buildOxlintConfig(await module.default)
@@ -125,7 +131,7 @@ async function oxlintConfigPath(cwd: string, configFile: string): Promise<string
   writeFileSync(configPath, oxlintConfig == null ? '' : JSON.stringify(oxlintConfig, null, 2))
   writeFileSync(keyPath, key)
 
-  return oxlintConfig == null ? undefined : configPath
+  return oxlintConfig == null ? undefined : args(isTypeAware(oxlintConfig))
 }
 
 const cwd = process.cwd()
@@ -136,10 +142,10 @@ let status = 0
 
 if (configFile != null) {
   const oxlintBin = resolveBin('oxlint', import.meta.url)
-  const configPath = oxlintBin == null ? undefined : await oxlintConfigPath(cwd, configFile)
+  const configArgs = oxlintBin == null ? undefined : await oxlintConfigPath(cwd, configFile)
 
-  if (oxlintBin != null && configPath != null)
-    status = spawnSync(oxlintBin, ['--config', configPath, ...args.oxlint], { stdio: 'inherit' }).status ?? 1
+  if (oxlintBin != null && configArgs != null)
+    status = spawnSync(oxlintBin, [...configArgs, ...args.oxlint], { stdio: 'inherit' }).status ?? 1
 }
 
 const eslintBin = resolveBin('eslint', join(cwd, 'package.json')) ?? 'eslint'

@@ -1,7 +1,10 @@
 import type { Linter } from 'eslint'
 import type { TypedFlatConfigItem } from '../types'
 import type { OxlintScope } from './ledger'
-import { LEDGER, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope } from './ledger'
+import { LEDGER, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope, TYPE_AWARE } from './ledger'
+
+/** Name of the parser config item that builds the TypeScript program ESLint's type-aware rules read. */
+export const TYPE_AWARE_PARSER_NAME = 'kaynooo/typescript/type-aware-parser'
 
 /** Name the flat config items handing the ledger over to oxlint share. Their presence is what tells the bin to run oxlint. */
 export const OXLINT_CONFIG_NAME = 'kaynooo/oxlint'
@@ -21,6 +24,8 @@ export interface OxlintConfig {
 type RuleEntry = [severity: string, ...options: unknown[]]
 
 const ledger = new Set(LEDGER)
+
+const typeAware = new Set(TYPE_AWARE)
 
 const severity = (value: unknown): string => (['off', 'warn', 'error'][Number(value)] ?? String(value))
 
@@ -100,6 +105,36 @@ export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigI
     ignores: ['**/*.md/**'],
     rules,
   }))
+}
+
+/**
+ * Whether ESLint still runs a rule that needs type information. Config items scoped to files oxlint cannot read are
+ * skipped, so a markdown-only `off` does not read as a global one.
+ */
+export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
+  const live = new Set<string>()
+
+  for (const config of configs) {
+    if (unreadByOxlint(config.files))
+      continue
+
+    for (const [rule, value] of Object.entries(config.rules ?? {})) {
+      if (!typeAware.has(rule))
+        continue
+
+      if (severity(Array.isArray(value) ? value[0] : value) === 'off')
+        live.delete(rule)
+      else
+        live.add(rule)
+    }
+  }
+
+  return live.size > 0
+}
+
+/** Whether a generated config needs `--type-aware`, which costs oxlint a `tsgolint` pass. */
+export function isTypeAware(config: OxlintConfig): boolean {
+  return TYPE_AWARE.some(rule => config.rules[toOxlintRule(rule)] != null)
 }
 
 /** Build the `.oxlintrc.json` matching a resolved ESLint config. Returns nothing when the config kept every rule in ESLint. */

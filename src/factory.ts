@@ -2,7 +2,7 @@ import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from 
 import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
 import { detectExtensions } from './detect'
-import { oxlintDisables } from './oxlint/config'
+import { needsTypeInformation, oxlintDisables, TYPE_AWARE_PARSER_NAME } from './oxlint/config'
 import { a11y, a11yAstro } from './presets/a11y'
 import { astro } from './presets/astro'
 import { comments } from './presets/comments'
@@ -110,6 +110,9 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   const resolved = (await Promise.all(configs.map(async config => config))).flat()
   const user = (await Promise.all(userConfigs.map(async config => config))).flat() as TypedFlatConfigItem[]
   const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : []
+  const final = [...resolved, ...user, ...oxlint]
 
-  return composer<TypedFlatConfigItem>(...resolved, ...user, ...oxlint)
+  return composer<TypedFlatConfigItem>(
+    ...(needsTypeInformation(final) ? final : final.filter(config => config.name !== TYPE_AWARE_PARSER_NAME)),
+  )
 }

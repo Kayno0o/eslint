@@ -6,8 +6,8 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { defineConfig } from '../src/factory'
-import { buildOxlintConfig, OXLINT_CONFIG_NAME } from '../src/oxlint/config'
-import { LEDGER } from '../src/oxlint/ledger'
+import { buildOxlintConfig, isTypeAware, OXLINT_CONFIG_NAME, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
+import { LEDGER, TYPE_AWARE } from '../src/oxlint/ledger'
 
 const handoff = (configs: TypedFlatConfigItem[]) => configs.find(config => config.name === OXLINT_CONFIG_NAME)
 const handoffs = (configs: TypedFlatConfigItem[]) => configs.filter(config => config.name?.startsWith(OXLINT_CONFIG_NAME))
@@ -70,6 +70,39 @@ describe('ledger handoff', () => {
     const oxlint = buildOxlintConfig(await defineConfig())
 
     expect(oxlint?.categories).toEqual({ correctness: 'off' })
+  })
+})
+
+describe('type-aware handover', () => {
+  it('drops the parser that builds a typescript program', async () => {
+    const configs = await defineConfig({ strict: true })
+
+    expect(configs.find(config => config.name === TYPE_AWARE_PARSER_NAME)).toBeUndefined()
+    expect(disabled(configs)).toContain('ts/no-floating-promises')
+    expect(isTypeAware(buildOxlintConfig(configs)!)).toBe(true)
+  })
+
+  it('carries the options eslint resolved for them', async () => {
+    const oxlint = buildOxlintConfig(await defineConfig({ strict: true }))
+
+    expect(oxlint?.rules['typescript/return-await']).toEqual(['error', 'in-try-catch'])
+    expect(oxlint?.rules['typescript/strict-boolean-expressions'])
+      .toEqual(['error', { allowNullableBoolean: true, allowNullableObject: true }])
+  })
+
+  it('keeps the parser when a rule needing types stays in eslint', async () => {
+    const off = await defineConfig({ strict: true, oxlint: false })
+    const owned = await defineConfig({ strict: true, overrides: { rules: { 'ts/no-floating-promises': 'error' } } })
+
+    expect(off.find(config => config.name === TYPE_AWARE_PARSER_NAME)).toBeDefined()
+    expect(owned.find(config => config.name === TYPE_AWARE_PARSER_NAME)).toBeDefined()
+  })
+
+  it('asks for no type-aware pass when the config has no such rule', async () => {
+    const oxlint = buildOxlintConfig(await defineConfig())
+
+    expect(TYPE_AWARE.every(rule => LEDGER.includes(rule))).toBe(true)
+    expect(isTypeAware(oxlint!)).toBe(false)
   })
 })
 

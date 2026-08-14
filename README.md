@@ -26,13 +26,27 @@ Part of the ruleset has moved to [oxlint](https://oxc.rs). The `kaynooo` bin run
 The handover is derived from your resolved ESLint config, not from a config you maintain: the rules in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts) are turned off in ESLint and written to `node_modules/.cache/kaynooo/oxlintrc.json`, with the options ESLint resolved for them. Rules stay in ESLint when:
 
 - they have no oxlint equivalent - every `style/*`, `regexp/*`, `perfectionist/*`, `solid/*`, `better-tailwindcss/*`, `e18e/*`, `antfu/*`, `eslint-comments/*`, `unused-imports/*` and `kaynooo/*` rule, plus everything for JSON, YAML, TOML, Markdown and CSS, which oxlint does not read
-- they need type information - oxlint does them through `oxlint-tsgolint`, which is not wired up yet
-- we enable them for part of the tree with options that differ per file type, like `ts/ban-ts-comment`
+- we enable them for JS but not TS, like `no-unused-vars` - oxlint has no such split, and `no-undef` would need our globals translated with it
 - **you configured them yourself**, anywhere in your config - your scoping and options are not ours to translate, so the rule keeps running under ESLint alone
 
 A rule we scope to a file family is handed over scoped: the `jsx-a11y/*` rules go into an oxlint `overrides` block for `**/*.jsx` and `**/*.tsx`, and are turned off in ESLint for those files only. The `astro/jsx-a11y/*` rules stay in ESLint, since oxlint reads `<script>` blocks in `.astro` but not the template.
 
 Markdown code blocks keep the full ESLint ruleset, since oxlint does not read `.md`.
+
+### Type-aware rules
+
+With `strict: true` the type-aware rules go to oxlint too, which runs them through [`oxlint-tsgolint`](https://github.com/oxc-project/tsgolint). They move as a block: ESLint only stops building a TypeScript program once every one of them is handed over, so one rule left behind - because you configured it yourself, say - keeps the program and the cost that comes with it. When that happens nothing breaks, the rules just stay where they were.
+
+Dropping the program is the whole point. On this repo, 56 files:
+
+| | |
+| --- | --- |
+| ESLint alone, type-aware rules included | 4584 ms |
+| ESLint with the program dropped | 1661 ms |
+| oxlint `--type-aware` doing them instead | 190 ms |
+| `kaynooo` end to end | **1838 ms** |
+
+`oxlint-tsgolint` ships a ~22 MB platform binary and is a hard dependency, so the ESLint config and the linter that runs it can never disagree about who owns a rule. Projects that never set `strict: true` still pay for the download.
 
 ### Why not oxlint's own categories
 

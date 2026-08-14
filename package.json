@@ -68,6 +68,7 @@
     "eslint-plugin-yml": "^3.8.1",
     "globals": "^17.11.0",
     "oxlint": "^1.78.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "toml-eslint-parser": "^1.0.3",
     "yaml-eslint-parser": "^2.1.0"
   },

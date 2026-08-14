@@ -1,11 +1,34 @@
 /**
+ * Ledger rules oxlint runs through `oxlint-tsgolint`. ESLint only stops building a TypeScript program once every
+ * one of them is handed over, so they move as a block: one rule left behind costs the whole saving.
+ */
+export const TYPE_AWARE: string[] = [
+  'ts/await-thenable',
+  'ts/dot-notation',
+  'ts/no-floating-promises',
+  'ts/no-for-in-array',
+  'ts/no-implied-eval',
+  'ts/no-misused-promises',
+  'ts/no-unnecessary-type-assertion',
+  'ts/no-unsafe-argument',
+  'ts/no-unsafe-call',
+  'ts/no-unsafe-member-access',
+  'ts/no-unsafe-return',
+  'ts/promise-function-async',
+  'ts/restrict-plus-operands',
+  'ts/restrict-template-expressions',
+  'ts/return-await',
+  'ts/strict-boolean-expressions',
+  'ts/switch-exhaustiveness-check',
+  'ts/unbound-method',
+]
+
+/**
  * Rules handed over to oxlint. Every name here is turned off in ESLint and enabled in the generated
  * `.oxlintrc.json`, so a name only belongs here once oxlint reports the same thing ESLint did.
  *
- * Excluded on purpose:
- * - rules our presets enable for JS but disable for TS (`no-redeclare`, `no-unused-vars`, ...) - oxlint has no such
- *   split, and `no-undef` would need our `languageOptions.globals` translated with it
- * - type-aware rules - they need `oxlint-tsgolint`
+ * Excluded on purpose: rules our presets enable for JS but disable for TS (`no-redeclare`, `no-unused-vars`, ...),
+ * since oxlint has no such split and `no-undef` would need our `languageOptions.globals` translated with it.
  */
 export const LEDGER: string[] = [
   'accessor-pairs',
@@ -199,6 +222,8 @@ export const LEDGER: string[] = [
   'unicorn/prefer-string-starts-ends-with',
   'unicorn/prefer-type-error',
   'unicorn/throw-new-error',
+
+  ...TYPE_AWARE,
 ]
 
 /** Our plugin aliases mapped onto the oxlint plugin that implements them. */
