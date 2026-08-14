@@ -35,7 +35,7 @@ export async function formatters(options: OptionsFormatters | boolean = {}): Pro
     tabWidth: 2,
     trailingComma: 'all',
     useTabs: false,
-    ...(resolved.prettierOptions ?? {}),
+    ...resolved.prettierOptions,
   }
   const prettier = (parser: string, extra: Record<string, unknown> = {}): Linter.RuleEntry =>
     ['error', { ...base, parser, plugins: [], ...extra }]

@@ -34,6 +34,10 @@ A rule we scope to a file family is handed over scoped: the `jsx-a11y/*` rules g
 
 Markdown code blocks keep the full ESLint ruleset, since oxlint does not read `.md`.
 
+### Why not oxlint's own categories
+
+The generated config sets `categories: { correctness: 'off' }` and lists every rule explicitly. Letting oxlint's default category through would re-enable rules our presets deliberately turn off, and pull in ones that misread our stack - `no-unassigned-vars` flags every SolidJS `ref` binding, `jsdoc/check-tag-names` flags custom tags. Rules that earn their place get enabled in the presets and reach oxlint through the ledger, so ESLint and your editor agree on the ruleset.
+
 ### Why not `eslint-plugin-oxlint`
 
 It turns off rules by their upstream names, and our presets alias the plugins (`ts/*` rather than `@typescript-eslint/*`, `eslint-plugin-import-lite` under `import/*`), so its disables miss. It also expects you to maintain `.oxlintrc.json` and mirror it into ESLint, which is the opposite of what we want: here the ESLint config is the single source and the oxlint config is generated from it.

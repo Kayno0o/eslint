@@ -3,9 +3,9 @@
  * `.oxlintrc.json`, so a name only belongs here once oxlint reports the same thing ESLint did.
  *
  * Excluded on purpose:
- * - rules our presets enable for JS but disable for TS (`no-redeclare`, `no-unused-vars`, ...) - oxlint has no such split
+ * - rules our presets enable for JS but disable for TS (`no-redeclare`, `no-unused-vars`, ...) - oxlint has no such
+ *   split, and `no-undef` would need our `languageOptions.globals` translated with it
  * - type-aware rules - they need `oxlint-tsgolint`
- * - `ts/ban-ts-comment` and `ts/consistent-type-definitions` - our presets give them different options per file type
  */
 export const LEDGER: string[] = [
   'accessor-pairs',
@@ -64,9 +64,11 @@ export const LEDGER: string[] = [
   'no-unneeded-ternary',
   'no-unreachable-loop',
   'no-unsafe-finally',
+  'no-unsafe-optional-chaining',
   'no-useless-call',
   'no-useless-catch',
   'no-useless-computed-key',
+  'no-useless-escape',
   'no-useless-rename',
   'no-useless-return',
   'no-var',
@@ -144,10 +146,12 @@ export const LEDGER: string[] = [
 
   'ts/adjacent-overload-signatures',
   'ts/array-type',
+  'ts/ban-ts-comment',
   'ts/ban-tslint-comment',
   'ts/class-literal-property-style',
   'ts/consistent-generic-constructors',
   'ts/consistent-indexed-object-style',
+  'ts/consistent-type-definitions',
   'ts/consistent-type-imports',
   'ts/method-signature-style',
   'ts/no-array-constructor',
@@ -184,6 +188,9 @@ export const LEDGER: string[] = [
   'unicorn/new-for-builtins',
   'unicorn/no-instanceof-builtins',
   'unicorn/no-new-buffer',
+  'unicorn/no-useless-fallback-in-spread',
+  'unicorn/no-useless-length-check',
+  'unicorn/no-useless-spread',
   'unicorn/number-literal-case',
   'unicorn/prefer-dom-node-text-content',
   'unicorn/prefer-includes',

@@ -205,6 +205,7 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
         'no-unreachable-loop': 'error',
         'no-unsafe-finally': 'error',
         'no-unsafe-negation': 'error',
+        'no-unsafe-optional-chaining': 'error',
         'no-unused-expressions': [
           'error',
           {
@@ -235,6 +236,7 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
         'no-useless-catch': 'error',
         'no-useless-computed-key': 'error',
         'no-useless-constructor': 'error',
+        'no-useless-escape': 'error',
         'no-useless-rename': 'error',
         'no-useless-return': 'error',
         'no-var': 'error',
