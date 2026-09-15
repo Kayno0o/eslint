@@ -32,6 +32,9 @@ import { yaml } from './presets/yaml'
 
 const GLOB_TS = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 
+/** A `filesTypeAware` glob naming a component format, captured to tell which one. */
+const COMPONENT_TYPE_AWARE_GLOB = /\.(astro|svelte)$/
+
 export async function defineConfig(options: FactoryOptions = {}, ...userConfigs: UserConfig[]) {
   const {
     strict = false,
@@ -48,6 +51,14 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   const componentGlobs = [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
   // oxlint-tsgolint reads neither component format, so under the handover giving components our own type-aware rules would only turn off the core rules those replace. A consumer's own type-aware rule reaching a component still gets the parser, scoped by componentTypeAwareParsers below.
   const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...(enableOxlint ? [] : componentGlobs)]
+  // Under the handover, a component named explicitly in filesTypeAware keeps the type-aware block in eslint, since tsgolint never reads it.
+  const typeAwareComponents = enableOxlint
+    ? filesTypeAware.filter((glob) => {
+      const ext = COMPONENT_TYPE_AWARE_GLOB.exec(glob)?.[1]
+
+      return (ext === 'astro' && enableAstro) || (ext === 'svelte' && enableSvelte)
+    })
+    : []
   const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
   const tailwindOptions = options.tailwind ?? markup
 
@@ -123,7 +134,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   if (typeAwareParserIndex !== -1)
     resolved.splice(typeAwareParserIndex + 1, 0, ...componentParsers)
 
-  const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : []
+  const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user], typeAwareComponents) : []
   const final = [...resolved, ...user, ...oxlint]
 
   return composer<TypedFlatConfigItem>(

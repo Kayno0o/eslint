@@ -6,6 +6,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { ESLint } from 'eslint'
 import { defineConfig } from '../src/factory'
+import { buildOxlintConfig, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
 
 /** Each component format `oxlint-tsgolint` never reads, with a file of that format and the option turning it on. */
 const COMPONENTS: [format: string, filePath: string, options: FactoryOptions][] = [
@@ -119,5 +120,55 @@ describe('strict handover with a consumer type-aware rule outside the ledger han
 
     expect(messages.filter(message => message.fatal === true)).toEqual([])
     expect(messages.map(message => message.ruleId)).toContain('ts/prefer-nullish-coalescing')
+  })
+})
+
+/** The explicit `filesTypeAware` naming a svelte component under the handover. */
+const NAMED_SVELTE_OPTIONS: FactoryOptions = { svelte: true, filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.svelte'] }
+
+/** An un-awaited promise, keyed by the component format and the explicit `filesTypeAware` naming it under the handover. */
+const NAMED_COMPONENTS: [format: string, fileName: string, code: string, options: FactoryOptions][] = [
+  ['svelte', 'Typed.svelte', '<script lang="ts">\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n</script>\n\n<p>typed</p>\n', NAMED_SVELTE_OPTIONS],
+  ['astro', 'Typed.astro', '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n', { astro: true, filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.astro'] }],
+]
+
+describe('strict handover with a component named explicitly in filesTypeAware', () => {
+  for (const [format, fileName, code, options] of NAMED_COMPONENTS) {
+    it(`keeps the type-aware block in eslint for the named ${format} component`, async () => {
+      const messages = await lintInProject(options, ['**/*.ts', `**/*.${format}`], fileName, code)
+
+      expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
+    })
+  }
+
+  it('does not report the same rule on a ts file, which oxlint still owns', async () => {
+    const tsCode = 'async function load(): Promise<number> {\n  return 1\n}\n\nload()\n'
+    const messages = await lintInProject(NAMED_SVELTE_OPTIONS, ['**/*.ts', '**/*.svelte'], 'probe.ts', tsCode)
+
+    expect(messages.map(message => message.ruleId)).not.toContain('ts/no-floating-promises')
+  })
+
+  it('still hands the rule to the generated oxlint config', async () => {
+    const configs = await defineConfig({ ...NAMED_SVELTE_OPTIONS, strict: true, tailwind: false })
+
+    expect(buildOxlintConfig(configs)?.rules['typescript/no-floating-promises']).toBeDefined()
+  })
+})
+
+describe('strict handover with no consumer rules', () => {
+  it('keeps dropping the type-aware parser by default', async () => {
+    const configs = await defineConfig({ strict: true })
+
+    expect(configs.find(config => config.name === TYPE_AWARE_PARSER_NAME)).toBeUndefined()
+  })
+})
+
+describe('strict handover with a consumer off scoped to test files', () => {
+  it('does not drop the program a source file still needs', async () => {
+    const code = 'async function load(): Promise<number> {\n  return 1\n}\n\nload()\n'
+    const messages = await lintInProject({}, ['**/*.ts'], 'source.ts', code, { files: ['**/*.test.ts'], rules: { 'ts/no-floating-promises': 'off' } })
+
+    expect(messages.filter(message => message.fatal === true)).toEqual([])
+    expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
   })
 })

@@ -136,19 +136,22 @@ function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
  * Flat config items turning the ledger off in ESLint, one per scope so a rule only goes quiet where oxlint picks it
  * up. Markdown code blocks keep them all, since oxlint does not read `.md`.
  * A file family oxlint reads only in part keeps the rules its partial lists.
+ * `typeAwareComponents` names the components `filesTypeAware` calls out explicitly: tsgolint never reads them, so
+ * the type-aware block stays on in eslint for those alone.
  */
-export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigItem[] {
+export function oxlintDisables(configs: TypedFlatConfigItem[], typeAwareComponents: string[] = []): TypedFlatConfigItem[] {
   const partials = partialsIn(configs)
   const items = new Map<string, TypedFlatConfigItem & { rules: Linter.RulesRecord }>()
 
   for (const rule of resolveLedger(configs).keys()) {
     const scope = toOxlintScope(rule)
     const kept = partials.filter(partial => partialRules.get(partial)?.has(rule) === true)
-    const name = [OXLINT_CONFIG_NAME, scope?.name, ...kept.map(partial => `except-${partial.name}`)].filter(part => part != null).join('/')
+    const exceptComponents = typeAware.has(rule) && typeAwareComponents.length > 0
+    const name = [OXLINT_CONFIG_NAME, scope?.name, ...kept.map(partial => `except-${partial.name}`), ...(exceptComponents ? ['except-components'] : [])].filter(part => part != null).join('/')
     const item = items.get(name) ?? {
       name,
       ...(scope == null ? {} : { files: scope.files }),
-      ignores: ['**/*.md/**', ...kept.flatMap(partial => partial.files)],
+      ignores: ['**/*.md/**', ...kept.flatMap(partial => partial.files), ...(exceptComponents ? typeAwareComponents : [])],
       rules: {},
     }
 
@@ -198,12 +201,29 @@ export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parser
 }
 
 /**
+ * A config item's scope for `needsTypeInformation`'s liveness tracking: its `files`, plus its `ignores` without the
+ * markdown-code-block entry every type-aware item carries.
+ */
+function typeAwareScopeKey(config: TypedFlatConfigItem): string {
+  const ignores = (config.ignores ?? []).filter(glob => glob !== '**/*.md/**')
+
+  return JSON.stringify({ files: config.files ?? null, ignores })
+}
+
+/** An `off` with no `files` and no ignores beyond the markdown one applies everywhere, so it kills every scope. */
+function isUnscopedOff(config: TypedFlatConfigItem): boolean {
+  return config.files == null && (config.ignores ?? []).every(glob => glob === '**/*.md/**')
+}
+
+/**
  * Whether ESLint still runs a rule that needs type information. Config items scoped to files oxlint cannot read are
- * skipped, so a markdown-only `off` does not read as a global one.
+ * skipped, so a markdown-only `off` does not read as a global one. Liveness is tracked per rule and scope, so a
+ * scoped `off` - a consumer's own, or the one excluding a component named in `filesTypeAware` - only kills the
+ * entry sharing its exact scope, while an unscoped `off` kills every entry for the rule.
  */
 export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
   const plugins = pluginsIn(configs)
-  const live = new Set<string>()
+  const live = new Map<string, Set<string>>()
 
   for (const config of configs) {
     if (unreadByOxlint(config.files))
@@ -213,10 +233,25 @@ export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
       if (!isTypeChecked(rule, plugins))
         continue
 
-      if (severity(Array.isArray(value) ? value[0] : value) === 'off')
+      const off = severity(Array.isArray(value) ? value[0] : value) === 'off'
+
+      if (off && isUnscopedOff(config)) {
+        live.delete(rule)
+
+        continue
+      }
+
+      const scopes = live.get(rule) ?? new Set<string>()
+
+      if (off)
+        scopes.delete(typeAwareScopeKey(config))
+      else
+        scopes.add(typeAwareScopeKey(config))
+
+      if (scopes.size === 0)
         live.delete(rule)
       else
-        live.add(rule)
+        live.set(rule, scopes)
     }
   }
 
