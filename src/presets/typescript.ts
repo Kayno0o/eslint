@@ -10,14 +10,12 @@ export interface TypescriptOptions {
   strict?: boolean
   tsconfigPath?: string
   filesTypeAware?: string[]
-  /** Files the type-aware parser sets `projectService` up for. Defaults to `filesTypeAware`; kept separate so a component can get type information for a type-aware rule a consumer configures on it themselves, without also getting our own type-aware rules. */
-  filesTypeAwareParser?: string[]
   /** Component extensions, such as `svelte`, whose scripts get the TypeScript rules as well. */
   componentExts?: string[]
 }
 
 export async function typescript(options: TypescriptOptions = {}): Promise<TypedFlatConfigItem[]> {
-  const { strict = false, tsconfigPath, filesTypeAware = files, filesTypeAwareParser = filesTypeAware, componentExts = [] } = options
+  const { strict = false, tsconfigPath, filesTypeAware = files, componentExts = [] } = options
   const [parserTs, pluginAntfu, pluginTs] = await Promise.all([
     interopDefault(import('@typescript-eslint/parser')),
     interopDefault(import('eslint-plugin-antfu')),
@@ -153,7 +151,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
     configs.push(
       {
         name: TYPE_AWARE_PARSER_NAME,
-        files: filesTypeAwareParser,
+        files: filesTypeAware,
         ignores: ignoresMarkdownCode,
         languageOptions: {
           parser: parserTs,

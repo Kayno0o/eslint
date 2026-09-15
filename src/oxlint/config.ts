@@ -122,6 +122,43 @@ export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigI
 }
 
 /**
+ * Parser items giving the type-aware parser's projectService to exactly the components a consumer's own live type-aware rule reaches, each item's files scoped to the intersection so an untouched component is never asked for.
+ * Skips the config items `ours` already claims for the preset, so only a consumer's own rule contributes.
+ */
+export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parserItem: TypedFlatConfigItem | undefined, componentGlobs: string[]): TypedFlatConfigItem[] {
+  if (parserItem == null || componentGlobs.length === 0)
+    return []
+
+  const parserOptions = parserItem.languageOptions?.parserOptions
+  const items: TypedFlatConfigItem[] = []
+
+  for (const config of configs) {
+    if (handover(config.name) || ours(config.name))
+      continue
+
+    const live = Object.entries(config.rules ?? {}).some(([rule, value]) => typeAware.has(rule) && severity(Array.isArray(value) ? value[0] : value) !== 'off')
+
+    if (!live)
+      continue
+
+    const configFiles = config.files
+    const files = configFiles == null
+      ? [...componentGlobs]
+      : componentGlobs.flatMap(glob => configFiles.map(entry => [glob, ...(Array.isArray(entry) ? entry : [entry])]))
+
+    items.push({
+      name: items.length === 0 ? `${TYPE_AWARE_PARSER_NAME}/components` : `${TYPE_AWARE_PARSER_NAME}/components/${items.length}`,
+      files,
+      ...(config.ignores == null ? {} : { ignores: config.ignores }),
+      ...(config.basePath == null ? {} : { basePath: config.basePath }),
+      languageOptions: { parserOptions },
+    })
+  }
+
+  return items
+}
+
+/**
  * Whether ESLint still runs a rule that needs type information. Config items scoped to files oxlint cannot read are
  * skipped, so a markdown-only `off` does not read as a global one.
  */

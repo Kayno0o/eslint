@@ -2,7 +2,7 @@ import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from 
 import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
 import { detectExtensions } from './detect'
-import { needsTypeInformation, oxlintDisables, TYPE_AWARE_PARSER_NAME } from './oxlint/config'
+import { componentTypeAwareParsers, needsTypeInformation, oxlintDisables, TYPE_AWARE_PARSER_NAME } from './oxlint/config'
 import { a11y, a11yAstro } from './presets/a11y'
 import { astro } from './presets/astro'
 import { comments } from './presets/comments'
@@ -46,10 +46,8 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   const markup = enableAstro || enableSolid || enableSvelte
   const componentGlobs = [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
-  // oxlint-tsgolint reads neither component format, so while oxlint takes the type-aware rules, giving components our own type-aware rules would only turn off the core rules those replace.
+  // oxlint-tsgolint reads neither component format, so under the handover giving components our own type-aware rules would only turn off the core rules those replace. A consumer's own type-aware rule reaching a component still gets the parser, scoped by componentTypeAwareParsers below.
   const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...(enableOxlint ? [] : componentGlobs)]
-  // The type-aware parser stays on components regardless: a consumer can still configure a type-aware rule on them themselves, and it needs the projectService that parser sets up or it throws.
-  const filesTypeAwareParser = options.filesTypeAware ?? [...GLOB_TS, ...componentGlobs]
   const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
   const tailwindOptions = options.tailwind ?? markup
 
@@ -63,7 +61,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     e18e(),
     unicorn(),
     jsx(),
-    typescript({ strict, tsconfigPath, filesTypeAware, filesTypeAwareParser, componentExts: enableSvelte ? ['svelte'] : [] }),
+    typescript({ strict, tsconfigPath, filesTypeAware, componentExts: enableSvelte ? ['svelte'] : [] }),
     stylistic(),
     regexp(),
     test(),
@@ -118,10 +116,17 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   const resolved = (await Promise.all(configs.map(async config => config))).flat()
   const user = (await Promise.all(userConfigs.map(async config => config))).flat() as TypedFlatConfigItem[]
+  // Under the handover, a consumer's own live type-aware rule still needs the parser's projectService wherever it reaches a component. Spliced right after the parser item, and so before astro's or svelte's own item, so their extraFileExtensions and inner parser still win the merge for it.
+  const typeAwareParserIndex = resolved.findIndex(config => config.name === TYPE_AWARE_PARSER_NAME)
+  const componentParsers = enableOxlint ? componentTypeAwareParsers([...resolved, ...user], resolved[typeAwareParserIndex], componentGlobs) : []
+
+  if (typeAwareParserIndex !== -1)
+    resolved.splice(typeAwareParserIndex + 1, 0, ...componentParsers)
+
   const oxlint = enableOxlint ? oxlintDisables([...resolved, ...user]) : []
   const final = [...resolved, ...user, ...oxlint]
 
   return composer<TypedFlatConfigItem>(
-    ...(needsTypeInformation(final) ? final : final.filter(config => config.name !== TYPE_AWARE_PARSER_NAME)),
+    ...(needsTypeInformation(final) ? final : final.filter(config => config.name !== TYPE_AWARE_PARSER_NAME && !config.name?.startsWith(`${TYPE_AWARE_PARSER_NAME}/`))),
   )
 }

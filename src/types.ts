@@ -50,7 +50,7 @@ export interface FactoryOptions {
   strict?: boolean
   /** Path to the tsconfig used for type-aware linting. */
   tsconfigPath?: string
-  /** Files given our own type-aware rules. Defaults to every TS file, plus `.astro` or `.svelte` when `astro` or `svelte` is on and `oxlint` is false, since `oxlint-tsgolint` reads neither. The type-aware parser's `projectService` covers components regardless, so a type-aware rule a consumer configures on one themselves still gets type information. */
+  /** Files given our own type-aware rules. Defaults to every TS file, plus `.astro` or `.svelte` when `astro` or `svelte` is on and `oxlint` is false, since `oxlint-tsgolint` reads neither. Under the handover, a type-aware rule you configure yourself still gets the type-aware parser's `projectService` wherever it reaches a component. */
   filesTypeAware?: string[]
   /** Enable formatters (CSS, HTML, ...). Defaults to `{ css: true }` when `astro`, `solid` or `svelte` is on. */
   formatters?: OptionsFormatters | boolean
