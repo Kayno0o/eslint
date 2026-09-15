@@ -1,7 +1,11 @@
 import type { Linter } from 'eslint'
 import type { TypedFlatConfigItem } from '../types'
 import type { OxlintPartial, OxlintScope } from './ledger'
+import process from 'node:process'
 import { LEDGER, PARTIALS, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope, TYPE_AWARE } from './ledger'
+
+/** A component glob naming `.astro`, which needs `project` instead of `projectService`. */
+const ASTRO_COMPONENT_GLOB = /\.astro$/
 
 /** Name of the parser config item that builds the TypeScript program ESLint's type-aware rules read. */
 export const TYPE_AWARE_PARSER_NAME = 'kaynooo/typescript/type-aware-parser'
@@ -165,12 +169,16 @@ export function oxlintDisables(configs: TypedFlatConfigItem[], typeAwareComponen
 /**
  * Parser items giving the type-aware parser's projectService to exactly the components a consumer's own live type-aware rule reaches, each item's files scoped to the intersection so an untouched component is never asked for.
  * Skips the config items `ours` already claims for the preset, so only a consumer's own rule contributes.
+ * `.astro` gets `project` instead: `astro-eslint-parser` warns and falls back to `project: true` on `projectService`, dropping `tsconfigRootDir`. `tsconfigPath` is required for that fallback, so it is threaded in from the factory.
  */
-export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parserItem: TypedFlatConfigItem | undefined, componentGlobs: string[]): TypedFlatConfigItem[] {
+export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parserItem: TypedFlatConfigItem | undefined, componentGlobs: string[], tsconfigPath?: string): TypedFlatConfigItem[] {
   if (parserItem == null || componentGlobs.length === 0)
     return []
 
   const parserOptions = parserItem.languageOptions?.parserOptions
+  const astroParserOptions = tsconfigPath == null
+    ? parserOptions
+    : Object.assign({}, parserOptions, { projectService: false, project: tsconfigPath, tsconfigRootDir: process.cwd() })
   const plugins = pluginsIn(configs)
   const items: TypedFlatConfigItem[] = []
 
@@ -184,17 +192,20 @@ export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parser
       continue
 
     const configFiles = config.files
-    const files = configFiles == null
-      ? [...componentGlobs]
-      : componentGlobs.flatMap(glob => configFiles.map(entry => [glob, ...(Array.isArray(entry) ? entry : [entry])]))
 
-    items.push({
-      name: items.length === 0 ? `${TYPE_AWARE_PARSER_NAME}/components` : `${TYPE_AWARE_PARSER_NAME}/components/${items.length}`,
-      files,
-      ...(config.ignores == null ? {} : { ignores: config.ignores }),
-      ...(config.basePath == null ? {} : { basePath: config.basePath }),
-      languageOptions: { parserOptions },
-    })
+    for (const glob of componentGlobs) {
+      const files = configFiles == null
+        ? [glob]
+        : configFiles.map(entry => [glob, ...(Array.isArray(entry) ? entry : [entry])])
+
+      items.push({
+        name: items.length === 0 ? `${TYPE_AWARE_PARSER_NAME}/components` : `${TYPE_AWARE_PARSER_NAME}/components/${items.length}`,
+        files,
+        ...(config.ignores == null ? {} : { ignores: config.ignores }),
+        ...(config.basePath == null ? {} : { basePath: config.basePath }),
+        languageOptions: { parserOptions: ASTRO_COMPONENT_GLOB.test(glob) ? astroParserOptions : parserOptions },
+      })
+    }
   }
 
   return items

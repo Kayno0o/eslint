@@ -129,7 +129,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   const user = (await Promise.all(userConfigs.map(async config => config))).flat() as TypedFlatConfigItem[]
   // Under the handover, a consumer's own live type-aware rule still needs the parser's projectService wherever it reaches a component. Spliced right after the parser item, and so before astro's or svelte's own item, so their extraFileExtensions and inner parser still win the merge for it.
   const typeAwareParserIndex = resolved.findIndex(config => config.name === TYPE_AWARE_PARSER_NAME)
-  const componentParsers = enableOxlint ? componentTypeAwareParsers([...resolved, ...user], resolved[typeAwareParserIndex], componentGlobs) : []
+  const componentParsers = enableOxlint ? componentTypeAwareParsers([...resolved, ...user], resolved[typeAwareParserIndex], componentGlobs, tsconfigPath) : []
 
   if (typeAwareParserIndex !== -1)
     resolved.splice(typeAwareParserIndex + 1, 0, ...componentParsers)

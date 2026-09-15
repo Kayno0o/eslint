@@ -72,6 +72,12 @@ The ESLint extension only reports what ESLint still owns. To see the rest inline
 }
 ```
 
+## Astro
+
+`defineConfig({ astro: true })` lints `.astro` files through `astro-eslint-parser`. Wherever `.astro` gets type information - `strict: true` with `oxlint: false`, or a component named in `filesTypeAware`, or a consumer's own type-aware rule reaching it under the handover - it gets `project` and `tsconfigRootDir` directly rather than `projectService`, since `astro-eslint-parser` only emulates `project` from it, with a `console.warn`, and drops `tsconfigRootDir` doing so.
+
+`astro-eslint-parser` also resolves `typescript` from the current working directory rather than from `tsconfigRootDir`, so lint from your project root. That part is upstream and not something this package works around.
+
 ## Svelte
 
 `defineConfig({ svelte: true })` lints components through `svelte-eslint-parser`, with TypeScript in `<script lang="ts">`, and `.svelte.ts` / `.svelte.js` rune modules alongside them. It runs `eslint-plugin-svelte`'s recommended rules, gives component scripts the TypeScript rules, and swaps `prefer-const` for `svelte/prefer-const` in components, so `$props()` destructuring and `$derived` may stay `let`. Like `astro` and `solid`, it turns the Tailwind preset and CSS formatting on by default.

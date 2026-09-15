@@ -5,6 +5,7 @@ import { interopDefault } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 const ignoresMarkdownCode = ['**/*.md/**']
+const astroGlob = /\.astro$/
 
 export interface TypescriptOptions {
   strict?: boolean
@@ -148,6 +149,8 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
   ]
 
   if (strict && tsconfigPath != null && tsconfigPath !== '') {
+    const astroFilesTypeAware = filesTypeAware.filter(glob => astroGlob.test(glob))
+
     configs.push(
       {
         name: TYPE_AWARE_PARSER_NAME,
@@ -163,6 +166,21 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
           },
         },
       },
+      // `astro-eslint-parser` warns and falls back to `project: true` on `projectService`, which drops `tsconfigRootDir`: give `.astro` `project` directly instead. Placed before the astro preset's own item, so its `extraFileExtensions` and inner parser still win the merge.
+      ...(astroFilesTypeAware.length === 0
+        ? []
+        : [{
+          name: `${TYPE_AWARE_PARSER_NAME}/astro`,
+          files: astroFilesTypeAware,
+          ignores: ignoresMarkdownCode,
+          languageOptions: {
+            parserOptions: {
+              projectService: false,
+              project: tsconfigPath,
+              tsconfigRootDir: process.cwd(),
+            },
+          },
+        }]),
       {
         name: 'kaynooo/typescript/rules-type-aware',
         files: filesTypeAware,
