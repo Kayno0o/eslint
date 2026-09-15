@@ -50,17 +50,19 @@ export interface FactoryOptions {
   strict?: boolean
   /** Path to the tsconfig used for type-aware linting. */
   tsconfigPath?: string
-  /** Files to lint with type information. Defaults to every TS file, plus `.astro` when `astro` is on. */
+  /** Files to lint with type information. Defaults to every TS file, plus `.astro` or `.svelte` when `astro` or `svelte` is on. */
   filesTypeAware?: string[]
-  /** Enable formatters (CSS, HTML, ...). Defaults to `{ css: true }` when `astro` or `solid` is on. */
+  /** Enable formatters (CSS, HTML, ...). Defaults to `{ css: true }` when `astro`, `solid` or `svelte` is on. */
   formatters?: OptionsFormatters | boolean
   /** Enable the Astro preset. */
   astro?: boolean
   /** Enable the Solid preset. */
   solid?: boolean
+  /** Enable the Svelte preset, on components and on `.svelte.ts` rune modules. */
+  svelte?: boolean
   /** Enable the accessibility preset (`jsx-a11y`) on JSX files, plus `.astro` when `astro` is on. */
   a11y?: boolean
-  /** Enable the Tailwind preset. Defaults to on when `astro` or `solid` is on. */
+  /** Enable the Tailwind preset. Defaults to on when `astro`, `solid` or `svelte` is on. */
   tailwind?: TailwindOptions | boolean
   /** Hand the migrated rules to oxlint, turning them off in ESLint. Requires running the `kaynooo` bin instead of `eslint`. */
   oxlint?: boolean

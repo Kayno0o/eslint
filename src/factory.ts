@@ -21,6 +21,7 @@ import { perfectionist } from './presets/perfectionist'
 import { regexp } from './presets/regexp'
 import { solid } from './presets/solid'
 import { stylistic } from './presets/stylistic'
+import { svelte } from './presets/svelte'
 import { tailwind } from './presets/tailwind'
 import { test } from './presets/test'
 import { toml } from './presets/toml'
@@ -37,13 +38,14 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     tsconfigPath = strict ? 'tsconfig.json' : undefined,
     astro: enableAstro = false,
     solid: enableSolid = false,
+    svelte: enableSvelte = false,
     a11y: enableA11y = false,
     oxlint: enableOxlint = true,
     overrides,
   } = options
 
-  const markup = enableAstro || enableSolid
-  const filesTypeAware = options.filesTypeAware ?? (enableAstro ? [...GLOB_TS, '**/*.astro'] : GLOB_TS)
+  const markup = enableAstro || enableSolid || enableSvelte
+  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
   const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
   const tailwindOptions = options.tailwind ?? markup
 
@@ -57,7 +59,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     e18e(),
     unicorn(),
     jsx(),
-    typescript({ strict, tsconfigPath, filesTypeAware }),
+    typescript({ strict, tsconfigPath, filesTypeAware, componentExts: enableSvelte ? ['svelte'] : [] }),
     stylistic(),
     regexp(),
     test(),
@@ -68,6 +70,9 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   if (enableSolid)
     configs.push(solid())
+
+  if (enableSvelte)
+    configs.push(svelte())
 
   if (enableA11y) {
     configs.push(a11y())

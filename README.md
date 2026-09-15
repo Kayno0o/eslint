@@ -25,7 +25,7 @@ Part of the ruleset has moved to [oxlint](https://oxc.rs). The `kaynooo` bin run
 
 The handover is derived from your resolved ESLint config, not from a config you maintain: the rules in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts) are turned off in ESLint and written to `node_modules/.cache/kaynooo/oxlintrc.json`, with the options ESLint resolved for them. Rules stay in ESLint when:
 
-- they have no oxlint equivalent - every `style/*`, `regexp/*`, `perfectionist/*`, `solid/*`, `better-tailwindcss/*`, `e18e/*`, `antfu/*`, `eslint-comments/*`, `unused-imports/*` and `kaynooo/*` rule, plus everything for JSON, YAML, TOML, Markdown and CSS, which oxlint does not read
+- they have no oxlint equivalent - every `style/*`, `regexp/*`, `perfectionist/*`, `solid/*`, `svelte/*`, `better-tailwindcss/*`, `e18e/*`, `antfu/*`, `eslint-comments/*`, `unused-imports/*` and `kaynooo/*` rule, plus everything for JSON, YAML, TOML, Markdown and CSS, which oxlint does not read
 - we enable them for JS but not TS, like `no-unused-vars` - oxlint has no such split, and `no-undef` would need our globals translated with it
 - **you configured them yourself**, anywhere in your config - your scoping and options are not ours to translate, so the rule keeps running under ESLint alone
 
@@ -67,6 +67,19 @@ The ESLint extension only reports what ESLint still owns. To see the rest inline
   "oxc.configPath": "node_modules/.cache/kaynooo/oxlintrc.json"
 }
 ```
+
+## Svelte
+
+`defineConfig({ svelte: true })` lints components through `svelte-eslint-parser`, with TypeScript in `<script lang="ts">`, and `.svelte.ts` / `.svelte.js` rune modules alongside them. It runs `eslint-plugin-svelte`'s recommended rules, gives component scripts the TypeScript rules, and swaps `prefer-const` for `svelte/prefer-const` in components, so `$props()` destructuring and `$derived` may stay `let`. Like `astro` and `solid`, it turns the Tailwind preset and CSS formatting on by default.
+
+oxlint reads a component's `<script>` blocks but not its markup, so three ledger rules stay in ESLint for `**/*.svelte`, whose parser sees both:
+
+- `prefer-const` and `ts/consistent-type-imports`, which oxlint silently skips in a component
+- `no-self-assign`, which the Svelte plugin turns off in components and oxlint would still report
+
+The rest of the ledger goes to oxlint for components too, and rune modules are plain TypeScript to it. The list is `PARTIALS` in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts).
+
+With `strict: true`, `.svelte` joins `filesTypeAware`, but `oxlint-tsgolint` does not read components: while the type-aware rules are handed over, they reach rune modules and not components. `oxlint: false` keeps them in ESLint, which type-checks components too, at the cost of the TypeScript program.
 
 ## VSCode
 
@@ -119,6 +132,7 @@ The ESLint extension only reports what ESLint still owns. To see the rest inline
     "gql",
     "graphql",
     "astro",
+    "svelte",
     "less",
     "scss",
     "pcss",

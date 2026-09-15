@@ -10,10 +10,12 @@ export interface TypescriptOptions {
   strict?: boolean
   tsconfigPath?: string
   filesTypeAware?: string[]
+  /** Component extensions, such as `svelte`, whose scripts get the TypeScript rules as well. */
+  componentExts?: string[]
 }
 
 export async function typescript(options: TypescriptOptions = {}): Promise<TypedFlatConfigItem[]> {
-  const { strict = false, tsconfigPath, filesTypeAware = files } = options
+  const { strict = false, tsconfigPath, filesTypeAware = files, componentExts = [] } = options
   const [parserTs, pluginAntfu, pluginTs] = await Promise.all([
     interopDefault(import('@typescript-eslint/parser')),
     interopDefault(import('eslint-plugin-antfu')),
@@ -34,7 +36,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
     },
     {
       name: 'kaynooo/typescript/rules',
-      files,
+      files: [...files, ...componentExts.map(ext => `**/*.${ext}`)],
       rules: {
         'constructor-super': 'off',
         'getter-return': 'off',

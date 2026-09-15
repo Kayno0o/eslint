@@ -1,7 +1,7 @@
 import type { Linter } from 'eslint'
 import type { TypedFlatConfigItem } from '../types'
-import type { OxlintScope } from './ledger'
-import { LEDGER, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope, TYPE_AWARE } from './ledger'
+import type { OxlintPartial, OxlintScope } from './ledger'
+import { LEDGER, PARTIALS, toOxlintOptions, toOxlintPlugin, toOxlintRule, toOxlintScope, TYPE_AWARE } from './ledger'
 
 /** Name of the parser config item that builds the TypeScript program ESLint's type-aware rules read. */
 export const TYPE_AWARE_PARSER_NAME = 'kaynooo/typescript/type-aware-parser'
@@ -42,18 +42,24 @@ function unreadByOxlint(files: TypedFlatConfigItem['files']): boolean {
   return globs.length > 0 && globs.every(glob => UNREAD_BY_OXLINT.test(glob))
 }
 
+const partialPreset = (name?: string): boolean => PARTIALS.some(partial => partial.preset === name)
+
+/** The file families oxlint reads only in part that a config turns on. */
+const partialsIn = (configs: TypedFlatConfigItem[]): OxlintPartial[] => PARTIALS.filter(partial => configs.some(config => config.name === partial.preset))
+
 /**
  * Effective value of every ledger rule, replaying ESLint's flat config merge (a severity-only entry keeps the
  * options set before it). Rules a consumer config touches are dropped: their scoping and options are not ours to
  * translate, so they stay in ESLint. Config items scoped to files oxlint cannot read are skipped entirely,
  * otherwise a markdown-only `off` would read as a global one.
+ * The preset item of a file family oxlint reads only in part is skipped for the same reason.
  */
 function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
   const resolved = new Map<string, RuleEntry>()
   const consumerOwned = new Set<string>()
 
   for (const config of configs) {
-    if (handover(config.name) || unreadByOxlint(config.files))
+    if (handover(config.name) || unreadByOxlint(config.files) || partialPreset(config.name))
       continue
 
     for (const [rule, value] of Object.entries(config.rules ?? {})) {
@@ -87,24 +93,28 @@ function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
 /**
  * Flat config items turning the ledger off in ESLint, one per scope so a rule only goes quiet where oxlint picks it
  * up. Markdown code blocks keep them all, since oxlint does not read `.md`.
+ * A file family oxlint reads only in part keeps the rules its partial lists.
  */
 export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigItem[] {
-  const scoped = new Map<OxlintScope | undefined, Linter.RulesRecord>()
+  const partials = partialsIn(configs)
+  const items = new Map<string, TypedFlatConfigItem & { rules: Linter.RulesRecord }>()
 
   for (const rule of resolveLedger(configs).keys()) {
     const scope = toOxlintScope(rule)
-    const rules = scoped.get(scope) ?? {}
+    const kept = partials.filter(partial => partial.rules.includes(rule))
+    const name = [OXLINT_CONFIG_NAME, scope?.name, ...kept.map(partial => `except-${partial.name}`)].filter(part => part != null).join('/')
+    const item = items.get(name) ?? {
+      name,
+      ...(scope == null ? {} : { files: scope.files }),
+      ignores: ['**/*.md/**', ...kept.flatMap(partial => partial.files)],
+      rules: {},
+    }
 
-    rules[rule] = 'off'
-    scoped.set(scope, rules)
+    item.rules[rule] = 'off'
+    items.set(name, item)
   }
 
-  return [...scoped].map(([scope, rules]) => ({
-    name: scope == null ? OXLINT_CONFIG_NAME : `${OXLINT_CONFIG_NAME}/${scope.name}`,
-    ...(scope == null ? {} : { files: scope.files }),
-    ignores: ['**/*.md/**'],
-    rules,
-  }))
+  return [...items.values()]
 }
 
 /**
@@ -175,10 +185,16 @@ export function buildOxlintConfig(configs: TypedFlatConfigItem[]): OxlintConfig 
     overrides.set(scope, override)
   }
 
+  // A file family oxlint reads only in part turns off the rules ESLint keeps for it, so only ESLint reports them there.
+  const kept: OxlintOverride[] = partialsIn(configs)
+    .map(partial => ({ files: partial.files, rules: Object.fromEntries(partial.rules.filter(rule => resolved.has(rule)).map(rule => [toOxlintRule(rule), 'off'])) }))
+    .filter(override => Object.keys(override.rules).length > 0)
+  const allOverrides = [...overrides.values(), ...kept]
+
   return {
     categories: { correctness: 'off' },
     plugins: [...plugins].sort(),
     rules,
-    ...(overrides.size === 0 ? {} : { overrides: [...overrides.values()] }),
+    ...(allOverrides.length === 0 ? {} : { overrides: allOverrides }),
   }
 }

@@ -248,6 +248,22 @@ export function toOxlintScope(rule: string): OxlintScope | undefined {
   return SCOPES.find(([prefix]) => rule.startsWith(prefix))?.[1]
 }
 
+export interface OxlintPartial {
+  name: string
+  /** The preset item turning the family on. Its settings hold for those files alone, so they never read as global ones. */
+  preset: string
+  files: string[]
+  /** Ledger rules ESLint keeps for those files. */
+  rules: string[]
+}
+
+/**
+ * File families oxlint reads only in part, with the ledger rules ESLint keeps for them. oxlint reads a Svelte component's `<script>` but not its markup, so it skips `prefer-const` and `ts/consistent-type-imports` there, and reports the self-assignments the Svelte plugin allows.
+ */
+export const PARTIALS: OxlintPartial[] = [
+  { name: 'svelte', preset: 'kaynooo/svelte/rules', files: ['**/*.svelte'], rules: ['no-self-assign', 'prefer-const', 'ts/consistent-type-imports'] },
+]
+
 /** Rule options ESLint and oxlint spell differently. */
 const OPTION_TRANSLATIONS: Record<string, (options: unknown[]) => unknown[]> = {
   'import/consistent-type-specifier-style': ([style]) => [style === 'inline' ? 'prefer-inline' : 'prefer-top-level'],
