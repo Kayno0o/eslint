@@ -58,8 +58,8 @@ function pluginsIn(configs: TypedFlatConfigItem[]): Map<string, PluginModule> {
 }
 
 /**
- * Whether `rule` needs a TypeScript program: it sits in the ledger's type-aware handover block, or its own plugin
- * rule declares `meta.docs.requiresTypeChecking`. `plugins` is the alias -> plugin lookup `pluginsIn` builds once.
+ * Whether `rule` needs a TypeScript program: it sits in the ledger's type-aware handover block, or its own plugin rule declares `meta.docs.requiresTypeChecking`.
+ * `plugins` is the alias -> plugin lookup `pluginsIn` builds once.
  */
 function isTypeChecked(rule: string, plugins: Map<string, PluginModule>): boolean {
   if (typeAware.has(rule))
@@ -137,11 +137,9 @@ function resolveLedger(configs: TypedFlatConfigItem[]): Map<string, RuleEntry> {
 }
 
 /**
- * Flat config items turning the ledger off in ESLint, one per scope so a rule only goes quiet where oxlint picks it
- * up. Markdown code blocks keep them all, since oxlint does not read `.md`.
+ * Flat config items turning the ledger off in ESLint, one per scope so a rule only goes quiet where oxlint picks it up. Markdown code blocks keep them all, since oxlint does not read `.md`.
  * A file family oxlint reads only in part keeps the rules its partial lists.
- * `typeAwareComponents` names the components `filesTypeAware` calls out explicitly: tsgolint never reads them, so
- * the type-aware block stays on in eslint for those alone.
+ * `typeAwareComponents` names the components `filesTypeAware` calls out explicitly: tsgolint never reads them, so the type-aware block stays on in eslint for those alone.
  */
 export function oxlintDisables(configs: TypedFlatConfigItem[], typeAwareComponents: string[] = []): TypedFlatConfigItem[] {
   const partials = partialsIn(configs)
@@ -211,14 +209,16 @@ export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parser
   return items
 }
 
-/**
- * A config item's scope for `needsTypeInformation`'s liveness tracking: its `files`, plus its `ignores` without the
- * markdown-code-block entry every type-aware item carries.
- */
-function typeAwareScopeKey(config: TypedFlatConfigItem): string {
-  const ignores = (config.ignores ?? []).filter(glob => glob !== '**/*.md/**')
+/** A glob list in one canonical order, each AND group sorted within itself first, so the same globs listed differently read as the same scope. */
+function canonicalGlobs(globs: (string | string[])[]): string[] {
+  return [...new Set(globs.map(entry => (Array.isArray(entry) ? JSON.stringify([...new Set(entry)].sort()) : entry)))].sort()
+}
 
-  return JSON.stringify({ files: config.files ?? null, ignores })
+/** A config item's scope for `needsTypeInformation`'s liveness tracking: its `files`, plus its `ignores` without the markdown-code-block entry every type-aware item carries. */
+function typeAwareScopeKey(config: TypedFlatConfigItem): string {
+  const ignores = canonicalGlobs((config.ignores ?? []).filter(glob => glob !== '**/*.md/**'))
+
+  return JSON.stringify({ files: config.files == null ? null : canonicalGlobs(config.files), ignores })
 }
 
 /** An `off` with no `files` and no ignores beyond the markdown one applies everywhere, so it kills every scope. */
@@ -227,10 +227,8 @@ function isUnscopedOff(config: TypedFlatConfigItem): boolean {
 }
 
 /**
- * Whether ESLint still runs a rule that needs type information. Config items scoped to files oxlint cannot read are
- * skipped, so a markdown-only `off` does not read as a global one. Liveness is tracked per rule and scope, so a
- * scoped `off` - a consumer's own, or the one excluding a component named in `filesTypeAware` - only kills the
- * entry sharing its exact scope, while an unscoped `off` kills every entry for the rule.
+ * Whether ESLint still runs a rule that needs type information. Config items scoped to files oxlint cannot read are skipped, so a markdown-only `off` does not read as a global one.
+ * Liveness is tracked per rule and scope: a scoped `off`, a consumer's own or the one excluding a component named in `filesTypeAware`, only kills the entry covering the same globs in any order, so turning a rule off for part of its files keeps the program for the rest, while an unscoped `off` kills every entry for the rule.
  */
 export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
   const plugins = pluginsIn(configs)

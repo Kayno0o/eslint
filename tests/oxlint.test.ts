@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import { describe, expect, it } from 'bun:test'
 import { defineConfig } from '../src/factory'
-import { buildOxlintConfig, isTypeAware, OXLINT_CONFIG_NAME, oxlintArgs, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
+import { buildOxlintConfig, isTypeAware, needsTypeInformation, OXLINT_CONFIG_NAME, oxlintArgs, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
 import { LEDGER, TYPE_AWARE } from '../src/oxlint/ledger'
 
 /** `ts/x` rules our presets configure whose own plugin metadata says they need type information. */
@@ -126,9 +126,27 @@ describe('type-aware handover', () => {
   })
 
   it('puts every type-checked rule our presets configure in the handover block', async () => {
-    const configs = await defineConfig({ strict: true, svelte: true, a11y: true })
+    const configs = await defineConfig({ strict: true, astro: true, solid: true, svelte: true, a11y: true })
 
     expect(typeCheckedRulesConfigured(configs).every(rule => TYPE_AWARE.includes(rule))).toBe(true)
+  })
+
+  it('reads a type-aware rule turned off with the same globs in another order as off', () => {
+    const configs: TypedFlatConfigItem[] = [
+      { name: 'kaynooo/typescript/rules-type-aware', files: ['**/*.ts', '**/*.tsx'], rules: { 'ts/no-floating-promises': 'error' } },
+      { name: 'consumer', files: ['**/*.tsx', '**/*.ts'], rules: { 'ts/no-floating-promises': 'off' } },
+    ]
+
+    expect(needsTypeInformation(configs)).toBe(false)
+  })
+
+  it('keeps the program when a type-aware rule is turned off for part of its files only', () => {
+    const configs: TypedFlatConfigItem[] = [
+      { name: 'kaynooo/typescript/rules-type-aware', files: ['**/*.ts', '**/*.tsx'], rules: { 'ts/no-floating-promises': 'error' } },
+      { name: 'consumer', files: ['**/*.ts'], rules: { 'ts/no-floating-promises': 'off' } },
+    ]
+
+    expect(needsTypeInformation(configs)).toBe(true)
   })
 })
 
