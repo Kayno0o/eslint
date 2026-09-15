@@ -33,6 +33,44 @@ const partialRules = new Map(PARTIALS.map(partial => [partial, new Set(partial.r
 
 const severity = (value: unknown): string => (['off', 'warn', 'error'][Number(value)] ?? String(value))
 
+interface RuleModule {
+  meta?: { docs?: { requiresTypeChecking?: boolean } }
+}
+
+interface PluginModule {
+  rules?: Record<string, RuleModule>
+}
+
+/** Alias -> plugin module lookup, built once per scan from every config item's `plugins` field. */
+function pluginsIn(configs: TypedFlatConfigItem[]): Map<string, PluginModule> {
+  const plugins = new Map<string, PluginModule>()
+
+  for (const config of configs) {
+    for (const [alias, plugin] of Object.entries(config.plugins ?? {}))
+      plugins.set(alias, plugin as PluginModule)
+  }
+
+  return plugins
+}
+
+/**
+ * Whether `rule` needs a TypeScript program: it sits in the ledger's type-aware handover block, or its own plugin
+ * rule declares `meta.docs.requiresTypeChecking`. `plugins` is the alias -> plugin lookup `pluginsIn` builds once.
+ */
+function isTypeChecked(rule: string, plugins: Map<string, PluginModule>): boolean {
+  if (typeAware.has(rule))
+    return true
+
+  const slash = rule.indexOf('/')
+
+  if (slash < 0)
+    return false
+
+  const ruleModule = plugins.get(rule.slice(0, slash))?.rules?.[rule.slice(slash + 1)]
+
+  return ruleModule?.meta?.docs?.requiresTypeChecking === true
+}
+
 const handover = (name?: string): boolean => name === OXLINT_CONFIG_NAME || (name?.startsWith(`${OXLINT_CONFIG_NAME}/`) ?? false)
 
 const ours = (name?: string): boolean => name != null && name.startsWith('kaynooo/') && name !== 'kaynooo/overrides' && !handover(name)
@@ -130,13 +168,14 @@ export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parser
     return []
 
   const parserOptions = parserItem.languageOptions?.parserOptions
+  const plugins = pluginsIn(configs)
   const items: TypedFlatConfigItem[] = []
 
   for (const config of configs) {
     if (handover(config.name) || ours(config.name))
       continue
 
-    const live = Object.entries(config.rules ?? {}).some(([rule, value]) => typeAware.has(rule) && severity(Array.isArray(value) ? value[0] : value) !== 'off')
+    const live = Object.entries(config.rules ?? {}).some(([rule, value]) => isTypeChecked(rule, plugins) && severity(Array.isArray(value) ? value[0] : value) !== 'off')
 
     if (!live)
       continue
@@ -163,6 +202,7 @@ export function componentTypeAwareParsers(configs: TypedFlatConfigItem[], parser
  * skipped, so a markdown-only `off` does not read as a global one.
  */
 export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
+  const plugins = pluginsIn(configs)
   const live = new Set<string>()
 
   for (const config of configs) {
@@ -170,7 +210,7 @@ export function needsTypeInformation(configs: TypedFlatConfigItem[]): boolean {
       continue
 
     for (const [rule, value] of Object.entries(config.rules ?? {})) {
-      if (!typeAware.has(rule))
+      if (!isTypeChecked(rule, plugins))
         continue
 
       if (severity(Array.isArray(value) ? value[0] : value) === 'off')

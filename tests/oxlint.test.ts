@@ -4,10 +4,30 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
 import { describe, expect, it } from 'bun:test'
 import { defineConfig } from '../src/factory'
 import { buildOxlintConfig, isTypeAware, OXLINT_CONFIG_NAME, oxlintArgs, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
 import { LEDGER, TYPE_AWARE } from '../src/oxlint/ledger'
+
+/** `ts/x` rules our presets configure whose own plugin metadata says they need type information. */
+function typeCheckedRulesConfigured(configs: TypedFlatConfigItem[]): string[] {
+  const configured = new Set<string>()
+
+  for (const config of configs) {
+    for (const rule of Object.keys(config.rules ?? {}))
+      configured.add(rule)
+  }
+
+  return [...configured].filter((rule) => {
+    const slash = rule.indexOf('/')
+
+    if (slash < 0 || rule.slice(0, slash) !== 'ts')
+      return false
+
+    return (tsPlugin.rules as Record<string, { meta?: { docs?: { requiresTypeChecking?: boolean } } }>)[rule.slice(slash + 1)]?.meta?.docs?.requiresTypeChecking === true
+  })
+}
 
 const handoff = (configs: TypedFlatConfigItem[]) => configs.find(config => config.name === OXLINT_CONFIG_NAME)
 const handoffs = (configs: TypedFlatConfigItem[]) => configs.filter(config => config.name?.startsWith(OXLINT_CONFIG_NAME))
@@ -103,6 +123,12 @@ describe('type-aware handover', () => {
 
     expect(TYPE_AWARE.every(rule => LEDGER.includes(rule))).toBe(true)
     expect(isTypeAware(oxlint!)).toBe(false)
+  })
+
+  it('puts every type-checked rule our presets configure in the handover block', async () => {
+    const configs = await defineConfig({ strict: true, svelte: true, a11y: true })
+
+    expect(typeCheckedRulesConfigured(configs).every(rule => TYPE_AWARE.includes(rule))).toBe(true)
   })
 })
 

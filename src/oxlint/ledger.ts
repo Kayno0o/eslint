@@ -11,6 +11,7 @@ export const TYPE_AWARE: string[] = [
   'ts/no-misused-promises',
   'ts/no-unnecessary-type-assertion',
   'ts/no-unsafe-argument',
+  'ts/no-unsafe-assignment',
   'ts/no-unsafe-call',
   'ts/no-unsafe-member-access',
   'ts/no-unsafe-return',

@@ -102,3 +102,22 @@ describe('strict handover with a consumer type-aware rule that ignores a compone
     })
   }
 })
+
+describe('strict handover with a consumer type-aware rule outside the ledger handover block', () => {
+  const code = 'declare const value: string | null\n\nconsole.log(value || \'fallback\')\n'
+
+  it('type-checks it on a TS file instead of throwing', async () => {
+    const messages = await lintInProject({}, ['**/*.ts'], 'probe.ts', code, { rules: { 'ts/prefer-nullish-coalescing': 'error' } })
+
+    expect(messages.filter(message => message.fatal === true)).toEqual([])
+    expect(messages.map(message => message.ruleId)).toContain('ts/prefer-nullish-coalescing')
+  })
+
+  it('type-checks it on a svelte component instead of throwing', async () => {
+    const componentCode = `<script lang="ts">\n${code}</script>\n`
+    const messages = await lintInProject({ svelte: true }, ['**/*.ts', '**/*.svelte'], 'Typed.svelte', componentCode, { files: ['**/*.svelte'], rules: { 'ts/prefer-nullish-coalescing': 'error' } })
+
+    expect(messages.filter(message => message.fatal === true)).toEqual([])
+    expect(messages.map(message => message.ruleId)).toContain('ts/prefer-nullish-coalescing')
+  })
+})
