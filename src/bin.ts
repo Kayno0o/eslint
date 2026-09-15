@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
-import { buildOxlintConfig, isTypeAware } from './oxlint/config'
+import { buildOxlintConfig, isTypeAware, oxlintArgs } from './oxlint/config'
 
 const CONFIG_FILES = ['eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', 'eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs']
 
@@ -116,7 +116,7 @@ async function oxlintConfigPath(cwd: string, configFile: string): Promise<string
   const keyPath = join(dir, 'oxlintrc.key')
   const build = statSync(join(import.meta.dirname, 'index.js')).mtimeMs
   const key = createHash('sha256').update(`${build}\0${configFile}\0`).update(readFileSync(configFile)).digest('hex')
-  const args = (typeAware: boolean): string[] => ['--config', configPath, ...(typeAware ? ['--type-aware'] : [])]
+  const args = (typeAware: boolean): string[] => oxlintArgs(configPath, typeAware)
 
   if (existsSync(keyPath) && readFileSync(keyPath, 'utf8') === key) {
     if (!existsSync(configPath) || readFileSync(configPath, 'utf8') === '')

@@ -137,6 +137,11 @@ export function isTypeAware(config: OxlintConfig): boolean {
   return TYPE_AWARE.some(rule => config.rules[toOxlintRule(rule)] != null)
 }
 
+/** Arguments running oxlint on a generated config. A file list with nothing oxlint reads, such as a commit touching only JSON, is left to ESLint instead of failing the run. */
+export function oxlintArgs(configPath: string, typeAware: boolean): string[] {
+  return ['--config', configPath, '--no-error-on-unmatched-pattern', ...(typeAware ? ['--type-aware'] : [])]
+}
+
 /** Build the `.oxlintrc.json` matching a resolved ESLint config. Returns nothing when the config kept every rule in ESLint. */
 export function buildOxlintConfig(configs: TypedFlatConfigItem[]): OxlintConfig | undefined {
   if (!configs.some(config => handover(config.name)))

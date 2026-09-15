@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { defineConfig } from '../src/factory'
-import { buildOxlintConfig, isTypeAware, OXLINT_CONFIG_NAME, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
+import { buildOxlintConfig, isTypeAware, OXLINT_CONFIG_NAME, oxlintArgs, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
 import { LEDGER, TYPE_AWARE } from '../src/oxlint/ledger'
 
 const handoff = (configs: TypedFlatConfigItem[]) => configs.find(config => config.name === OXLINT_CONFIG_NAME)
@@ -167,5 +167,18 @@ describe('generated config', () => {
     expect(output).toContain('scoped.tsx')
     expect(output).toContain('jsx-a11y(alt-text)')
     expect(output).not.toContain('unscoped.js')
+  })
+
+  it('leaves a file list it cannot read to eslint, as a commit touching only json hands it', async () => {
+    const oxlint = buildOxlintConfig(await defineConfig())
+    const dir = mkdtempSync(join(tmpdir(), 'kaynooo-oxlint-'))
+    const configPath = join(dir, 'oxlintrc.json')
+    const bin = join(dirname(createRequire(import.meta.url).resolve('oxlint/package.json')), 'bin/oxlint')
+    const manifest = join(dir, 'package.json')
+
+    writeFileSync(configPath, JSON.stringify(oxlint))
+    writeFileSync(manifest, '{}\n')
+
+    expect(spawnSync(bin, [...oxlintArgs(configPath, false), manifest], { encoding: 'utf8' }).status).toBe(0)
   })
 })
