@@ -258,10 +258,10 @@ export interface OxlintPartial {
 }
 
 /**
- * File families oxlint reads only in part, with the ledger rules ESLint keeps for them. oxlint reads a Svelte component's `<script>` but not its markup, so it skips `prefer-const` and `ts/consistent-type-imports` there, and reports the self-assignments the Svelte plugin allows.
+ * File families oxlint reads only in part, with the ledger rules ESLint keeps for them. oxlint reads a Svelte component's `<script>` but not its markup, so it skips `ts/consistent-type-imports` there, reports each legacy `$:` statement as a label and the self-assignments the Svelte plugin allows, and is kept off `prefer-const`, which it skips there today and `svelte/prefer-const` replaces.
  */
 export const PARTIALS: OxlintPartial[] = [
-  { name: 'svelte', preset: 'kaynooo/svelte/rules', files: ['**/*.svelte'], rules: ['no-self-assign', 'prefer-const', 'ts/consistent-type-imports'] },
+  { name: 'svelte', preset: 'kaynooo/svelte/rules', files: ['**/*.svelte'], rules: ['no-labels', 'no-self-assign', 'prefer-const', 'ts/consistent-type-imports'] },
 ]
 
 /** Rule options ESLint and oxlint spell differently. */

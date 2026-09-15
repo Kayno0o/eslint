@@ -45,7 +45,9 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   } = options
 
   const markup = enableAstro || enableSolid || enableSvelte
-  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
+  // oxlint-tsgolint reads neither component format, so while oxlint takes the type-aware rules, typing components would only turn off the core rules those replace.
+  const components = enableOxlint ? [] : [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
+  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...components]
   const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
   const tailwindOptions = options.tailwind ?? markup
 

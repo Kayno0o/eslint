@@ -27,6 +27,10 @@ const ledger = new Set(LEDGER)
 
 const typeAware = new Set(TYPE_AWARE)
 
+const partialPresets = new Set(PARTIALS.map(partial => partial.preset))
+
+const partialRules = new Map(PARTIALS.map(partial => [partial, new Set(partial.rules)]))
+
 const severity = (value: unknown): string => (['off', 'warn', 'error'][Number(value)] ?? String(value))
 
 const handover = (name?: string): boolean => name === OXLINT_CONFIG_NAME || (name?.startsWith(`${OXLINT_CONFIG_NAME}/`) ?? false)
@@ -42,7 +46,7 @@ function unreadByOxlint(files: TypedFlatConfigItem['files']): boolean {
   return globs.length > 0 && globs.every(glob => UNREAD_BY_OXLINT.test(glob))
 }
 
-const partialPreset = (name?: string): boolean => PARTIALS.some(partial => partial.preset === name)
+const partialPreset = (name?: string): boolean => name != null && partialPresets.has(name)
 
 /** The file families oxlint reads only in part that a config turns on. */
 const partialsIn = (configs: TypedFlatConfigItem[]): OxlintPartial[] => PARTIALS.filter(partial => configs.some(config => config.name === partial.preset))
@@ -101,7 +105,7 @@ export function oxlintDisables(configs: TypedFlatConfigItem[]): TypedFlatConfigI
 
   for (const rule of resolveLedger(configs).keys()) {
     const scope = toOxlintScope(rule)
-    const kept = partials.filter(partial => partial.rules.includes(rule))
+    const kept = partials.filter(partial => partialRules.get(partial)?.has(rule) === true)
     const name = [OXLINT_CONFIG_NAME, scope?.name, ...kept.map(partial => `except-${partial.name}`)].filter(part => part != null).join('/')
     const item = items.get(name) ?? {
       name,

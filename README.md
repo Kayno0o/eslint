@@ -37,6 +37,8 @@ Markdown code blocks keep the full ESLint ruleset, since oxlint does not read `.
 
 With `strict: true` the type-aware rules go to oxlint too, which runs them through [`oxlint-tsgolint`](https://github.com/oxc-project/tsgolint). They move as a block: ESLint only stops building a TypeScript program once every one of them is handed over, so one rule left behind - because you configured it yourself, say - keeps the program and the cost that comes with it. When that happens nothing breaks, the rules just stay where they were.
 
+`oxlint-tsgolint` reads neither `.astro` nor `.svelte`, so under the handover components get none of the type-aware rules and keep the core rules those replace, such as `dot-notation` and `no-implied-eval`. `oxlint: false` adds them to `filesTypeAware` and type-checks them in ESLint.
+
 Dropping the program is the whole point. On this repo, 56 files:
 
 | | |
@@ -72,14 +74,16 @@ The ESLint extension only reports what ESLint still owns. To see the rest inline
 
 `defineConfig({ svelte: true })` lints components through `svelte-eslint-parser`, with TypeScript in `<script lang="ts">`, and `.svelte.ts` / `.svelte.js` rune modules alongside them. It runs `eslint-plugin-svelte`'s recommended rules, gives component scripts the TypeScript rules, and swaps `prefer-const` for `svelte/prefer-const` in components, so `$props()` destructuring and `$derived` may stay `let`. Like `astro` and `solid`, it turns the Tailwind preset and CSS formatting on by default.
 
-oxlint reads a component's `<script>` blocks but not its markup, so three ledger rules stay in ESLint for `**/*.svelte`, whose parser sees both:
+oxlint reads a component's `<script>` blocks but not its markup, so it is kept off four ledger rules for `**/*.svelte`, whose parser sees both:
 
-- `prefer-const` and `ts/consistent-type-imports`, which oxlint silently skips in a component
+- `ts/consistent-type-imports`, which oxlint silently skips in a component, so ESLint reports it there instead
+- `no-labels`, which oxlint would report on every legacy `$:` statement, where ESLint's parser sees a reactive statement
 - `no-self-assign`, which the Svelte plugin turns off in components and oxlint would still report
+- `prefer-const`, which `svelte/prefer-const` replaces in components: oxlint skips it there today, and the entry keeps a later oxlint from reporting the `let` a component's markup reassigns
 
 The rest of the ledger goes to oxlint for components too, and rune modules are plain TypeScript to it. The list is `PARTIALS` in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts).
 
-With `strict: true`, `.svelte` joins `filesTypeAware`, but `oxlint-tsgolint` does not read components: while the type-aware rules are handed over, they reach rune modules and not components. `oxlint: false` keeps them in ESLint, which type-checks components too, at the cost of the TypeScript program.
+With `strict: true` and the handover on, components get no type-aware rules at all, since `oxlint-tsgolint` does not read them: the handed-over rules reach rune modules only, and components keep the core `dot-notation` and `no-implied-eval`. `oxlint: false` is what type-checks components: it adds `.svelte` to `filesTypeAware`, which gives them `ts/no-floating-promises`, `svelte/no-unused-props` and the rest of the type-aware rules, at the cost of the TypeScript program.
 
 ## VSCode
 
