@@ -35,9 +35,9 @@ Markdown code blocks keep the full ESLint ruleset, since oxlint does not read `.
 
 ### Type-aware rules
 
-With `strict: true` the type-aware rules go to oxlint too, which runs them through [`oxlint-tsgolint`](https://github.com/oxc-project/tsgolint). They move as a block: ESLint only stops building a TypeScript program once every one of them is handed over, so one rule left behind - because you configured it yourself, say - keeps the program and the cost that comes with it. When that happens nothing breaks, the rules just stay where they were.
+With `strict: true` the type-aware rules go to oxlint too, which runs them through [`oxlint-tsgolint`](https://github.com/oxc-project/tsgolint). They move as a block: ESLint only stops building a TypeScript program once every one of them is handed over, so one rule left behind - because you configured it yourself, say - keeps the program and the cost that comes with it. When that happens nothing breaks, the rules just stay where they were, wherever they run.
 
-`oxlint-tsgolint` reads neither `.astro` nor `.svelte`, so under the handover components get none of the type-aware rules and keep the core rules those replace, such as `dot-notation` and `no-implied-eval`. `oxlint: false` adds them to `filesTypeAware` and type-checks them in ESLint.
+`oxlint-tsgolint` reads neither `.astro` nor `.svelte`, so under the handover components get none of our own type-aware rules and keep the core rules those replace, such as `dot-notation` and `no-implied-eval`. `oxlint: false` adds them to `filesTypeAware`, which gives components our own type-aware rules too. Either way, the type-aware parser still covers components, so a type-aware rule you configure on one yourself still gets the type information it needs instead of throwing.
 
 Dropping the program is the whole point. On this repo, 56 files:
 
@@ -83,7 +83,7 @@ oxlint reads a component's `<script>` blocks but not its markup, so it is kept o
 
 The rest of the ledger goes to oxlint for components too, and rune modules are plain TypeScript to it. The list is `PARTIALS` in [`src/oxlint/ledger.ts`](src/oxlint/ledger.ts).
 
-With `strict: true` and the handover on, components get no type-aware rules at all, since `oxlint-tsgolint` does not read them: the handed-over rules reach rune modules only, and components keep the core `dot-notation` and `no-implied-eval`. `oxlint: false` is what type-checks components: it adds `.svelte` to `filesTypeAware`, which gives them `ts/no-floating-promises`, `svelte/no-unused-props` and the rest of the type-aware rules, at the cost of the TypeScript program.
+With `strict: true` and the handover on, components get none of our own type-aware rules, since `oxlint-tsgolint` does not read them: the handed-over rules reach rune modules only, and components keep the core `dot-notation` and `no-implied-eval`. `oxlint: false` is what type-checks components with our own rules: it adds `.svelte` to `filesTypeAware`, which gives them `ts/no-floating-promises`, `svelte/no-unused-props` and the rest of the type-aware rules. Either way, `.svelte` keeps the type-aware parser's `projectService`, so a type-aware rule you configure on a component yourself still gets type information instead of throwing.
 
 ## VSCode
 

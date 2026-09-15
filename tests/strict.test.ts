@@ -1,5 +1,8 @@
 import type { Linter } from 'eslint'
 import type { FactoryOptions } from '../src/types'
+import { mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { ESLint } from 'eslint'
 import { defineConfig } from '../src/factory'
@@ -28,6 +31,38 @@ describe('strict components', () => {
     it(`type-checks ${format} components once eslint keeps the type-aware rules`, async () => {
       expect(await severity({ ...options, oxlint: false }, filePath, 'ts/no-floating-promises')).toBe(2)
       expect(await severity({ ...options, oxlint: false }, filePath, 'no-implied-eval')).toBe(0)
+    })
+  }
+})
+
+/** A component with an un-awaited promise in its script, keyed by the glob and options a consumer would use to target it. */
+const CONSUMER_TYPE_AWARE: [format: string, glob: string, fileName: string, code: string, options: FactoryOptions][] = [
+  ['svelte', '**/*.svelte', 'Typed.svelte', '<script lang="ts">\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n</script>\n\n<p>typed</p>\n', { svelte: true }],
+  ['astro', '**/*.astro', 'Typed.astro', '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n', { astro: true }],
+]
+
+describe('strict handover with a consumer-owned type-aware rule on a component', () => {
+  for (const [format, glob, fileName, code, options] of CONSUMER_TYPE_AWARE) {
+    it(`gives a ${format} component type information instead of throwing when a consumer configures a type-aware rule on it themselves`, async () => {
+      const dir = mkdtempSync(join(tmpdir(), 'kaynooo-type-aware-'))
+
+      writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({
+        compilerOptions: { strict: true, target: 'ESNext', module: 'ESNext', moduleResolution: 'bundler', verbatimModuleSyntax: true, noEmit: true, skipLibCheck: true },
+        // The project service rejects a tsconfig with no TS-recognized input, so a real .ts file has to sit next to the component.
+        include: ['**/*.ts', glob],
+      }))
+      writeFileSync(join(dir, 'dummy.ts'), 'export const dummy = 1\n')
+      writeFileSync(join(dir, fileName), code)
+
+      const userConfig: Linter.Config = { files: [glob], rules: { 'ts/no-floating-promises': 'error' } }
+      const eslint = new ESLint({
+        cwd: dir,
+        overrideConfigFile: true,
+        overrideConfig: await defineConfig({ ...options, strict: true, tailwind: false, tsconfigPath: join(dir, 'tsconfig.json') }, userConfig),
+      })
+      const [result] = await eslint.lintFiles([join(dir, fileName)])
+
+      expect(result?.messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
     })
   }
 })

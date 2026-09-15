@@ -45,9 +45,11 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   } = options
 
   const markup = enableAstro || enableSolid || enableSvelte
-  // oxlint-tsgolint reads neither component format, so while oxlint takes the type-aware rules, typing components would only turn off the core rules those replace.
-  const components = enableOxlint ? [] : [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
-  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...components]
+  const componentGlobs = [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
+  // oxlint-tsgolint reads neither component format, so while oxlint takes the type-aware rules, giving components our own type-aware rules would only turn off the core rules those replace.
+  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...(enableOxlint ? [] : componentGlobs)]
+  // The type-aware parser stays on components regardless: a consumer can still configure a type-aware rule on them themselves, and it needs the projectService that parser sets up or it throws.
+  const filesTypeAwareParser = options.filesTypeAware ?? [...GLOB_TS, ...componentGlobs]
   const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
   const tailwindOptions = options.tailwind ?? markup
 
@@ -61,7 +63,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     e18e(),
     unicorn(),
     jsx(),
-    typescript({ strict, tsconfigPath, filesTypeAware, componentExts: enableSvelte ? ['svelte'] : [] }),
+    typescript({ strict, tsconfigPath, filesTypeAware, filesTypeAwareParser, componentExts: enableSvelte ? ['svelte'] : [] }),
     stylistic(),
     regexp(),
     test(),
