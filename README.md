@@ -9,12 +9,12 @@ import { defineConfig } from '@kaynooo/eslint'
 export default defineConfig({ strict: true })
 ```
 
-`package.json` - run the `kaynooo` bin instead of `eslint`, it drives both linters:
+`package.json` - run the `keslint` bin instead of `eslint`, it drives both linters:
 ```json
 {
   "scripts": {
-    "lint": "kaynooo --cache",
-    "lint:fix": "kaynooo --fix --cache"
+    "lint": "keslint --cache",
+    "lint:fix": "keslint --fix --cache"
   }
 }
 ```
