@@ -69,11 +69,11 @@ export async function jsonc(): Promise<TypedFlatConfigItem[]> {
             beforeColon: false,
           },
         ],
+        // No `multiline`: on an object opened inline and closed on its own line, it fights `antfu/consistent-list-newline` into circular fixes.
         'jsonc/object-curly-newline': [
           'error',
           {
             consistent: true,
-            multiline: true,
           },
         ],
         'jsonc/object-curly-spacing': [
