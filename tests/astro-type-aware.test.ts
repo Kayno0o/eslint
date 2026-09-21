@@ -11,7 +11,7 @@ import { defineConfig } from '../src/factory'
 const ASTRO_CODE = '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n'
 
 /** Lints an `.astro` fixture in a fresh temp dir, under a strict config built with `options`. */
-async function lintAstro(options: FactoryOptions, ...userConfigs: Linter.Config[]): Promise<Linter.LintMessage[]> {
+async function lintAstro(options: FactoryOptions): Promise<Linter.LintMessage[]> {
   const dir = mkdtempSync(join(tmpdir(), 'kaynooo-astro-type-aware-'))
 
   writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({
@@ -24,7 +24,7 @@ async function lintAstro(options: FactoryOptions, ...userConfigs: Linter.Config[
   const eslint = new ESLint({
     cwd: dir,
     overrideConfigFile: true,
-    overrideConfig: await defineConfig({ ...options, strict: true, tailwind: false, tsconfigPath: join(dir, 'tsconfig.json') }, ...userConfigs),
+    overrideConfig: await defineConfig({ ...options, strict: true, tailwind: false, tsconfigPath: join(dir, 'tsconfig.json') }),
   })
   const [result] = await eslint.lintFiles([join(dir, 'Typed.astro')])
 
@@ -42,15 +42,8 @@ describe('astro type-aware parsing', () => {
     warnSpy.mockRestore()
   })
 
-  it('type-checks an astro file with oxlint off, without the projectService warning', async () => {
-    const messages = await lintAstro({ astro: true, oxlint: false })
-
-    expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
-    expect(warnSpy).not.toHaveBeenCalled()
-  })
-
-  it('type-checks an astro file under the handover with a consumer rule, without the projectService warning', async () => {
-    const messages = await lintAstro({ astro: true }, { files: ['**/*.astro'], rules: { 'ts/no-floating-promises': 'error' } })
+  it('type-checks an astro file without the projectService warning', async () => {
+    const messages = await lintAstro({ astro: true })
 
     expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
     expect(warnSpy).not.toHaveBeenCalled()

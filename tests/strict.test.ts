@@ -6,12 +6,11 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { ESLint } from 'eslint'
 import { defineConfig } from '../src/factory'
-import { buildOxlintConfig, TYPE_AWARE_PARSER_NAME } from '../src/oxlint/config'
 
-/** Each component format `oxlint-tsgolint` never reads, with a file of that format and the option turning it on. */
-const COMPONENTS: [format: string, filePath: string, options: FactoryOptions][] = [
-  ['astro', 'probe/Probe.astro', { astro: true }],
-  ['svelte', 'probe/Probe.svelte', { svelte: true }],
+/** A component with an un-awaited promise in its script, keyed by its format and the option turning it on. */
+const COMPONENTS: [format: string, fileName: string, code: string, options: FactoryOptions][] = [
+  ['svelte', 'Typed.svelte', '<script lang="ts">\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n</script>\n\n<p>typed</p>\n', { svelte: true }],
+  ['astro', 'Typed.astro', '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n', { astro: true }],
 ]
 
 /** The severity ESLint resolves for `rule` on `filePath`, under a strict config built with `options`. */
@@ -22,34 +21,14 @@ async function severity(options: FactoryOptions, filePath: string, rule: string)
   return Array.isArray(entry) ? entry[0] : entry
 }
 
-describe('strict components', () => {
-  for (const [format, filePath, options] of COMPONENTS) {
-    it(`keeps the core rules on ${format} components while their type-aware versions go to oxlint, which never reads them`, async () => {
-      expect(await severity(options, filePath, 'dot-notation')).toBe(2)
-      expect(await severity(options, filePath, 'no-implied-eval')).toBe(2)
-    })
-
-    it(`type-checks ${format} components once eslint keeps the type-aware rules`, async () => {
-      expect(await severity({ ...options, oxlint: false }, filePath, 'ts/no-floating-promises')).toBe(2)
-      expect(await severity({ ...options, oxlint: false }, filePath, 'no-implied-eval')).toBe(0)
-    })
-  }
-})
-
-/** A component with an un-awaited promise in its script, keyed by the glob and options a consumer would use to target it. */
-const CONSUMER_TYPE_AWARE: [format: string, glob: string, fileName: string, code: string, options: FactoryOptions][] = [
-  ['svelte', '**/*.svelte', 'Typed.svelte', '<script lang="ts">\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n</script>\n\n<p>typed</p>\n', { svelte: true }],
-  ['astro', '**/*.astro', 'Typed.astro', '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n', { astro: true }],
-]
-
-/** Lints `fileName` in a fresh temp dir, under a strict handover config whose tsconfig `include` is `tsconfigInclude` and whose consumer configs are `userConfigs`. */
-async function lintInProject(options: FactoryOptions, tsconfigInclude: string[], fileName: string, code: string, ...userConfigs: Linter.Config[]): Promise<Linter.LintMessage[]> {
+/** Lints `fileName` in a fresh temp dir whose tsconfig covers it, under a strict config built with `options`. */
+async function lintInProject(options: FactoryOptions, fileName: string, code: string): Promise<Linter.LintMessage[]> {
   const dir = mkdtempSync(join(tmpdir(), 'kaynooo-type-aware-'))
 
   writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({
     compilerOptions: { strict: true, target: 'ESNext', module: 'ESNext', moduleResolution: 'bundler', verbatimModuleSyntax: true, noEmit: true, skipLibCheck: true },
     // The project service rejects a tsconfig with no TS-recognized input, so a real .ts file has to sit next to the component.
-    include: tsconfigInclude,
+    include: ['**/*.ts', `**/${fileName}`],
   }))
   writeFileSync(join(dir, 'dummy.ts'), 'export const dummy = 1\n')
   writeFileSync(join(dir, fileName), code)
@@ -57,118 +36,25 @@ async function lintInProject(options: FactoryOptions, tsconfigInclude: string[],
   const eslint = new ESLint({
     cwd: dir,
     overrideConfigFile: true,
-    overrideConfig: await defineConfig({ ...options, strict: true, tailwind: false, tsconfigPath: join(dir, 'tsconfig.json') }, ...userConfigs),
+    overrideConfig: await defineConfig({ ...options, strict: true, tailwind: false, tsconfigPath: join(dir, 'tsconfig.json') }),
   })
   const [result] = await eslint.lintFiles([join(dir, fileName)])
 
   return result?.messages ?? []
 }
 
-describe('strict handover with a consumer-owned type-aware rule on a component', () => {
-  for (const [format, glob, fileName, code, options] of CONSUMER_TYPE_AWARE) {
-    it(`gives a ${format} component type information instead of throwing when a consumer configures a type-aware rule on it themselves`, async () => {
-      const messages = await lintInProject(options, ['**/*.ts', glob], fileName, code, { files: [glob], rules: { 'ts/no-floating-promises': 'error' } })
-
-      expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
+describe('strict components', () => {
+  for (const [format, fileName, code, options] of COMPONENTS) {
+    it(`gives ${format} components the type-aware rules in place of the core rules they replace`, async () => {
+      expect(await severity(options, `probe/${fileName}`, 'ts/no-floating-promises')).toBe(2)
+      expect(await severity(options, `probe/${fileName}`, 'no-implied-eval')).toBe(0)
     })
-  }
-})
 
-describe('strict handover with a consumer type-aware rule scoped to TS files only', () => {
-  for (const [format, , fileName, code, options] of CONSUMER_TYPE_AWARE) {
-    it(`leaves an untouched ${format} component alone, even when the tsconfig does not cover it`, async () => {
-      const messages = await lintInProject(options, ['**/*.ts'], fileName, code, { files: ['**/*.ts'], rules: { 'ts/no-floating-promises': 'error' } })
+    it(`type-checks ${format} components`, async () => {
+      const messages = await lintInProject(options, fileName, code)
 
       expect(messages.filter(message => message.fatal === true)).toEqual([])
-    })
-  }
-})
-
-describe('strict handover with a consumer type-aware rule that has no files', () => {
-  for (const [format, glob, fileName, code, options] of CONSUMER_TYPE_AWARE) {
-    it(`reaches every ${format} component without throwing`, async () => {
-      const messages = await lintInProject(options, ['**/*.ts', glob], fileName, code, { rules: { 'ts/no-floating-promises': 'error' } })
-
       expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
     })
   }
-})
-
-describe('strict handover with a consumer type-aware rule that ignores a component', () => {
-  for (const [format, glob, fileName, code, options] of CONSUMER_TYPE_AWARE) {
-    it(`leaves the ignored ${format} component alone, even when the tsconfig does not cover it`, async () => {
-      const messages = await lintInProject(options, ['**/*.ts'], fileName, code, { rules: { 'ts/no-floating-promises': 'error' }, ignores: [glob] })
-
-      expect(messages.filter(message => message.fatal === true)).toEqual([])
-    })
-  }
-})
-
-describe('strict handover with a consumer type-aware rule outside the ledger handover block', () => {
-  const code = 'declare const value: string | null\n\nconsole.log(value || \'fallback\')\n'
-
-  it('type-checks it on a TS file instead of throwing', async () => {
-    const messages = await lintInProject({}, ['**/*.ts'], 'probe.ts', code, { rules: { 'ts/prefer-nullish-coalescing': 'error' } })
-
-    expect(messages.filter(message => message.fatal === true)).toEqual([])
-    expect(messages.map(message => message.ruleId)).toContain('ts/prefer-nullish-coalescing')
-  })
-
-  it('type-checks it on a svelte component instead of throwing', async () => {
-    const componentCode = `<script lang="ts">\n${code}</script>\n`
-    const messages = await lintInProject({ svelte: true }, ['**/*.ts', '**/*.svelte'], 'Typed.svelte', componentCode, { files: ['**/*.svelte'], rules: { 'ts/prefer-nullish-coalescing': 'error' } })
-
-    expect(messages.filter(message => message.fatal === true)).toEqual([])
-    expect(messages.map(message => message.ruleId)).toContain('ts/prefer-nullish-coalescing')
-  })
-})
-
-/** The explicit `filesTypeAware` naming a svelte component under the handover. */
-const NAMED_SVELTE_OPTIONS: FactoryOptions = { svelte: true, filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.svelte'] }
-
-/** An un-awaited promise, keyed by the component format and the explicit `filesTypeAware` naming it under the handover. */
-const NAMED_COMPONENTS: [format: string, fileName: string, code: string, options: FactoryOptions][] = [
-  ['svelte', 'Typed.svelte', '<script lang="ts">\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n</script>\n\n<p>typed</p>\n', NAMED_SVELTE_OPTIONS],
-  ['astro', 'Typed.astro', '---\nasync function load(): Promise<number> {\n  return 1\n}\n\nload()\n---\n<p>typed</p>\n', { astro: true, filesTypeAware: ['**/*.?([cm])ts', '**/*.?([cm])tsx', '**/*.astro'] }],
-]
-
-describe('strict handover with a component named explicitly in filesTypeAware', () => {
-  for (const [format, fileName, code, options] of NAMED_COMPONENTS) {
-    it(`keeps the type-aware block in eslint for the named ${format} component`, async () => {
-      const messages = await lintInProject(options, ['**/*.ts', `**/*.${format}`], fileName, code)
-
-      expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
-    })
-  }
-
-  it('does not report the same rule on a ts file, which oxlint still owns', async () => {
-    const tsCode = 'async function load(): Promise<number> {\n  return 1\n}\n\nload()\n'
-    const messages = await lintInProject(NAMED_SVELTE_OPTIONS, ['**/*.ts', '**/*.svelte'], 'probe.ts', tsCode)
-
-    expect(messages.map(message => message.ruleId)).not.toContain('ts/no-floating-promises')
-  })
-
-  it('still hands the rule to the generated oxlint config', async () => {
-    const configs = await defineConfig({ ...NAMED_SVELTE_OPTIONS, strict: true, tailwind: false })
-
-    expect(buildOxlintConfig(configs)?.rules['typescript/no-floating-promises']).toBeDefined()
-  })
-})
-
-describe('strict handover with no consumer rules', () => {
-  it('keeps dropping the type-aware parser by default', async () => {
-    const configs = await defineConfig({ strict: true })
-
-    expect(configs.find(config => config.name === TYPE_AWARE_PARSER_NAME)).toBeUndefined()
-  })
-})
-
-describe('strict handover with a consumer off scoped to test files', () => {
-  it('does not drop the program a source file still needs', async () => {
-    const code = 'async function load(): Promise<number> {\n  return 1\n}\n\nload()\n'
-    const messages = await lintInProject({}, ['**/*.ts'], 'source.ts', code, { files: ['**/*.test.ts'], rules: { 'ts/no-floating-promises': 'off' } })
-
-    expect(messages.filter(message => message.fatal === true)).toEqual([])
-    expect(messages.map(message => message.ruleId)).toContain('ts/no-floating-promises')
-  })
 })

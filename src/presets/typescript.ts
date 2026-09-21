@@ -1,6 +1,5 @@
 import type { TypedFlatConfigItem } from '../types'
 import process from 'node:process'
-import { TYPE_AWARE_PARSER_NAME } from '../oxlint/config'
 import { interopDefault } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
@@ -153,7 +152,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
 
     configs.push(
       {
-        name: TYPE_AWARE_PARSER_NAME,
+        name: 'kaynooo/typescript/type-aware-parser',
         files: filesTypeAware,
         ignores: ignoresMarkdownCode,
         languageOptions: {
@@ -170,7 +169,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
       ...(astroFilesTypeAware.length === 0
         ? []
         : [{
-          name: `${TYPE_AWARE_PARSER_NAME}/astro`,
+          name: 'kaynooo/typescript/type-aware-parser/astro',
           files: astroFilesTypeAware,
           ignores: ignoresMarkdownCode,
           languageOptions: {
