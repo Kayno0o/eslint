@@ -8,20 +8,44 @@ on:
     tags:
       - 'v*'
 
+# Pinned so the cache step and bun agree on one folder, whatever HOME the runner image sets.
+env:
+  BUN_INSTALL_CACHE_DIR: /tmp/bun-cache
+
 jobs:
   publish:
     runs-on: alpine
+    timeout-minutes: 15
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # A lockfile change still restores the closest older cache, so bun only fetches the packages that moved.
+      - name: Cache bun packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.BUN_INSTALL_CACHE_DIR }}
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install project deps
-        run: bun install --frozen-lockfile
+        run: bun install --silent --frozen-lockfile
 
       - name: Build package files
         run: bun run build
+
+      # A tag that fails its own checks never reaches the registry.
+      - name: Lint
+        run: bun run lint
+
+      - name: Check
+        run: bun run check
+
+      - name: Tests
+        run: bun test
 
       - name: Configure npm authentication
         run: |
