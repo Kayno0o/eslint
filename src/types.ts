@@ -56,6 +56,8 @@ export interface FactoryOptions {
   formatters?: OptionsFormatters | boolean
   /** Enable the Astro preset. */
   astro?: boolean
+  /** Lint the script and server fences of kay's `.kay` components, type-aware under `strict` once `kay check` has written their shadow types. */
+  kay?: boolean
   /** Enable the Solid preset. */
   solid?: boolean
   /** Enable the Svelte preset, on components and on `.svelte.ts` rune modules. */

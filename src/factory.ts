@@ -14,6 +14,7 @@ import { javascript } from './presets/javascript'
 import { jsdoc } from './presets/jsdoc'
 import { jsonc } from './presets/jsonc'
 import { jsx } from './presets/jsx'
+import { kay } from './presets/kay'
 import { kaynooo, kaynoooTypeAware } from './presets/kaynooo'
 import { markdown } from './presets/markdown'
 import { perfectionist } from './presets/perfectionist'
@@ -36,6 +37,7 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     strict = false,
     tsconfigPath = strict ? 'tsconfig.json' : undefined,
     astro: enableAstro = false,
+    kay: enableKay = false,
     solid: enableSolid = false,
     svelte: enableSvelte = false,
     a11y: enableA11y = false,
@@ -98,6 +100,10 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     configs.push(formatters(formattersOptions))
 
   configs.push(disables(), kaynooo())
+
+  // After the stylistic and import rules, which it turns off where the code kay generates around a fence would trip them.
+  if (enableKay)
+    configs.push(kay())
 
   if (markup)
     configs.push(ui())

@@ -31,6 +31,12 @@ export default defineConfig({ strict: true })
 
 With `strict: true`, components get the type-aware rules too, so they need to be in your tsconfig.
 
+## Kay
+
+`defineConfig({ kay: true })` lints the script and server fences of kay's `.kay` components, through the `kay/eslint` processor of the app's own `kay`: it lints the TSX `kay check` type-checks a component as, and reports only what falls in a fence's own code, at its `.kay` line, fixes included. The rules the generated code around a fence would trip are off there: `style/indent`, blank lines and padding, import order and adjacency.
+
+With `strict: true`, fences get the type-aware rules through the shadow files `kay check`, `kay dev` or kay's language server write under `.kay/types`, so run one of them before linting, as CI runs `kay check` first.
+
 ## VSCode
 
 `.vscode/settings.json`
@@ -83,6 +89,7 @@ With `strict: true`, components get the type-aware rules too, so they need to be
     "graphql",
     "astro",
     "svelte",
+    "kay",
     "less",
     "scss",
     "pcss",
