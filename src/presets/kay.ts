@@ -13,9 +13,18 @@ interface KayEslint {
   shadowParser: <Parser>(parser: Parser) => NonNullable<NonNullable<TypedFlatConfigItem['languageOptions']>['parser']>
 }
 
+function resolveKay(): string {
+  try {
+    return createRequire(join(process.cwd(), 'package.json')).resolve('kay/eslint')
+  }
+  catch {
+    throw new Error(`kay: true lints .kay files through the app's own kay, which ${process.cwd()} lacks: depend on kay 0.14 or later under the name kay, and lint from the project root`)
+  }
+}
+
 export async function kay(): Promise<TypedFlatConfigItem[]> {
   // From the app rather than this package, which does not depend on kay: the app's own `kay` compiles its components.
-  const entry = createRequire(join(process.cwd(), 'package.json')).resolve('kay/eslint')
+  const entry = resolveKay()
   const [{ processor, shadowParser }, parserTs] = await Promise.all([
     import(pathToFileURL(entry).href) as Promise<KayEslint>,
     interopDefault(import('@typescript-eslint/parser')),
