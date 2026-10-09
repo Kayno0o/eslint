@@ -3,6 +3,7 @@ import process from 'node:process'
 import { interopDefault } from '../plugins'
 
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
+const filesJs = ['**/*.?([cm])js', '**/*.?([cm])jsx']
 const ignoresMarkdownCode = ['**/*.md/**']
 const astroGlob = /\.astro$/
 
@@ -32,6 +33,16 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
       languageOptions: {
         parser: parserTs,
         parserOptions: { extraFileExtensions: [], sourceType: 'module' },
+      },
+    },
+    {
+      // `unused-imports/no-unused-vars` is typescript-eslint's rule, which reads `isValueReference` off the references of its scope manager: under espree's, every read of a variable counts as a type-only use.
+      name: 'kaynooo/typescript/parser-js',
+      files: filesJs,
+      ignores: ignoresMarkdownCode,
+      languageOptions: {
+        parser: parserTs,
+        parserOptions: { sourceType: 'module' },
       },
     },
     {
