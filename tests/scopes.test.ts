@@ -30,6 +30,11 @@ describe('rule scopes', () => {
     expect(severity(await ruleEntry('tests-e2e/probe.e2e.ts', 'e18e/prefer-static-regex'))).toBe(0)
   })
 
+  it('lets a test stub be async with nothing to await under strict', async () => {
+    expect(severity(await ruleEntry('src/probe.ts', 'ts/require-await', true))).toBe(2)
+    expect(severity(await ruleEntry('src/probe.test.ts', 'ts/require-await', true))).toBe(0)
+  })
+
   it('keeps nullable booleans and objects allowed in conditions under strict', async () => {
     expect(await ruleEntry('src/probe.ts', 'ts/strict-boolean-expressions', true)).toEqual([2, { allowNullableBoolean: true, allowNullableObject: true }])
   })

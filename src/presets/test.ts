@@ -25,6 +25,8 @@ export async function test(): Promise<TypedFlatConfigItem[]> {
         'test/no-only-tests': 'error',
         'e18e/prefer-static-regex': 'off',
         'no-unused-expressions': 'off',
+        // A stub returning a promise with nothing to await stays `async () => value`, as strict's ts/promise-function-async wants.
+        'ts/require-await': 'off',
       },
     },
   ]
