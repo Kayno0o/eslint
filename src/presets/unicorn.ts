@@ -22,7 +22,6 @@ export async function unicorn(): Promise<TypedFlatConfigItem[]> {
         'unicorn/escape-case': 'error',
         'unicorn/new-for-builtins': 'error',
         'unicorn/no-instanceof-builtins': 'error',
-        'unicorn/no-new-array': 'error',
         'unicorn/no-new-buffer': 'error',
         'unicorn/no-unsafe-sqlite-interpolation': 'error',
         'unicorn/no-useless-fallback-in-spread': 'error',

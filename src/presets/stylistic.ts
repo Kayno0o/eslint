@@ -18,9 +18,17 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
         style: pluginStylistic,
       },
       rules: {
+        'style/array-bracket-newline': [
+          'warn',
+          'consistent',
+        ],
         'style/array-bracket-spacing': [
           'error',
           'never',
+        ],
+        'style/array-element-newline': [
+          'warn',
+          'consistent',
         ],
         'style/arrow-parens': [
           'error',
@@ -85,34 +93,9 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
           'error',
           2,
           {
-            ArrayExpression: 1,
             CallExpression: {
-              arguments: 1,
+              arguments: 'first',
             },
-            flatTernaryExpressions: false,
-            FunctionDeclaration: {
-              body: 1,
-              parameters: 1,
-              returnType: 1,
-            },
-            FunctionExpression: {
-              body: 1,
-              parameters: 1,
-              returnType: 1,
-            },
-            ignoreComments: false,
-            ignoredNodes: [
-              'TSUnionType',
-              'TSIntersectionType',
-            ],
-            ImportDeclaration: 1,
-            MemberExpression: 1,
-            ObjectExpression: 1,
-            offsetTernaryExpressions: true,
-            outerIIFEBody: 1,
-            SwitchCase: 1,
-            tabLength: 2,
-            VariableDeclarator: 1,
           },
         ],
         'style/indent-binary-ops': [
@@ -138,12 +121,6 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
           'always',
           {
             exceptAfterSingleLine: true,
-          },
-        ],
-        'style/max-statements-per-line': [
-          'error',
-          {
-            max: 1,
           },
         ],
         'style/member-delimiter-style': [
@@ -216,6 +193,12 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
         'style/no-tabs': 'error',
         'style/no-trailing-spaces': 'error',
         'style/no-whitespace-before-property': 'error',
+        'style/object-curly-newline': [
+          'warn',
+          {
+            consistent: true,
+          },
+        ],
         'style/object-curly-spacing': [
           'error',
           'always',
@@ -231,6 +214,15 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
             classes: 'never',
             switches: 'never',
           },
+        ],
+        'style/padding-line-between-statements': [
+          'error',
+          { blankLine: 'always', prev: ['const', 'let'], next: '*' },
+          { blankLine: 'any', prev: ['const', 'let'], next: ['const', 'let'] },
+          { blankLine: 'always', prev: ['if'], next: '*' },
+          { blankLine: 'any', prev: ['if'], next: ['if'] },
+          { blankLine: 'always', prev: '*', next: ['if', 'function', 'switch', 'while', 'return', 'try', 'continue', 'break', 'throw'] },
+          { blankLine: 'always', prev: ['if', 'function', 'switch', 'while'], next: '*' },
         ],
         'style/quote-props': [
           'error',
@@ -325,70 +317,12 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
             functionPrototypeMethods: true,
           },
         ],
+        'style/wrap-regex': 'warn',
         'style/yield-star-spacing': [
           'error',
           {
             after: true,
             before: false,
-          },
-        ],
-        'style/jsx-closing-bracket-location': 'error',
-        'style/jsx-closing-tag-location': 'error',
-        'style/jsx-curly-brace-presence': [
-          'error',
-          {
-            propElementValues: 'always',
-          },
-        ],
-        'style/jsx-curly-newline': 'error',
-        'style/jsx-curly-spacing': [
-          'error',
-          'never',
-        ],
-        'style/jsx-equals-spacing': 'error',
-        'style/jsx-first-prop-new-line': 'error',
-        'style/jsx-function-call-newline': [
-          'error',
-          'multiline',
-        ],
-        'style/jsx-indent-props': [
-          'error',
-          2,
-        ],
-        'style/jsx-max-props-per-line': [
-          'error',
-          {
-            maximum: 1,
-            when: 'multiline',
-          },
-        ],
-        'style/jsx-one-expression-per-line': [
-          'error',
-          {
-            allow: 'single-child',
-          },
-        ],
-        'style/jsx-quotes': 'error',
-        'style/jsx-tag-spacing': [
-          'error',
-          {
-            afterOpening: 'never',
-            beforeClosing: 'never',
-            beforeSelfClosing: 'always',
-            closingSlash: 'never',
-          },
-        ],
-        'style/jsx-wrap-multilines': [
-          'error',
-          {
-            arrow: 'parens-new-line',
-            assignment: 'parens-new-line',
-            condition: 'parens-new-line',
-            declaration: 'parens-new-line',
-            logical: 'parens-new-line',
-            prop: 'parens-new-line',
-            propertyValue: 'parens-new-line',
-            return: 'parens-new-line',
           },
         ],
         'antfu/consistent-list-newline': 'error',

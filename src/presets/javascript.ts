@@ -40,9 +40,7 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
             setWithoutGet: true,
           },
         ],
-        'antfu/no-top-level-await': 'error',
         'array-callback-return': 'error',
-        'block-scoped-var': 'error',
         'constructor-super': 'error',
         'default-case-last': 'error',
         'dot-notation': [
@@ -54,6 +52,13 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
         'eqeqeq': [
           'error',
           'smart',
+        ],
+        'logical-assignment-operators': [
+          'error',
+          'always',
+          {
+            enforceForIfStatements: true,
+          },
         ],
         'new-cap': [
           'error',
@@ -74,15 +79,6 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
           'error',
           'always',
         ],
-        'no-console': [
-          'error',
-          {
-            allow: [
-              'warn',
-              'error',
-            ],
-          },
-        ],
         'no-const-assign': 'error',
         'no-control-regex': 'error',
         'no-debugger': 'error',
@@ -97,7 +93,12 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
             allowEmptyCatch: true,
           },
         ],
-        'no-empty-character-class': 'error',
+        'no-else-return': [
+          'error',
+          {
+            allowElseIf: false,
+          },
+        ],
         'no-empty-pattern': 'error',
         'no-eval': 'error',
         'no-ex-assign': 'error',
@@ -107,9 +108,17 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
         'no-fallthrough': 'error',
         'no-func-assign': 'error',
         'no-global-assign': 'error',
+        'no-implicit-coercion': [
+          'error',
+          {
+            boolean: true,
+            disallowTemplateShorthand: true,
+            number: true,
+            string: true,
+          },
+        ],
         'no-implied-eval': 'error',
         'no-import-assign': 'error',
-        'no-invalid-regexp': 'error',
         'no-irregular-whitespace': 'error',
         'no-iterator': 'error',
         'no-labels': [
@@ -120,6 +129,7 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
           },
         ],
         'no-lone-blocks': 'error',
+        'no-lonely-if': 'error',
         'no-loss-of-precision': 'error',
         'no-misleading-character-class': 'error',
         'no-multi-str': 'error',
@@ -231,7 +241,6 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
             variables: true,
           },
         ],
-        'no-useless-backreference': 'error',
         'no-useless-call': 'error',
         'no-useless-catch': 'error',
         'no-useless-computed-key': 'error',
@@ -254,6 +263,10 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
           {
             initialized: 'never',
           },
+        ],
+        'operator-assignment': [
+          'error',
+          'always',
         ],
         'prefer-arrow-callback': [
           'error',
@@ -289,11 +302,8 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
         'unused-imports/no-unused-vars': [
           'error',
           {
-            args: 'after-used',
             argsIgnorePattern: '^_',
-            ignoreRestSiblings: true,
-            vars: 'all',
-            varsIgnorePattern: '^_',
+            caughtErrors: 'none',
           },
         ],
         'use-isnan': [
@@ -309,7 +319,6 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
             requireStringLiterals: true,
           },
         ],
-        'vars-on-top': 'error',
         'yoda': [
           'error',
           'never',

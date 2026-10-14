@@ -22,10 +22,7 @@ export async function test(): Promise<TypedFlatConfigItem[]> {
       ],
       rules: {
         'test/no-only-tests': 'error',
-        'antfu/no-top-level-await': 'off',
-        'e18e/prefer-static-regex': 'off',
         'no-unused-expressions': 'off',
-        'ts/explicit-function-return-type': 'off',
       },
     },
   ]

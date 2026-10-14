@@ -11,7 +11,7 @@ import { imports } from './presets/imports'
 import { javascript } from './presets/javascript'
 import { jsonc } from './presets/jsonc'
 import { kay } from './presets/kay'
-import { kaynooo, kaynoooTypeAware } from './presets/kaynooo'
+import { kaynooo } from './presets/kaynooo'
 import { markdown } from './presets/markdown'
 import { perfectionist } from './presets/perfectionist'
 import { regexp } from './presets/regexp'
@@ -75,9 +75,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   if (tailwindOptions !== false)
     configs.push(tailwind(tailwindOptions === true ? {} : tailwindOptions))
-
-  if (strict)
-    configs.push(kaynoooTypeAware(filesTypeAware))
 
   if (overrides != null)
     configs.push([{ name: 'kaynooo/overrides', ...overrides }])

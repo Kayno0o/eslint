@@ -9,4 +9,3 @@ declare module 'eslint-plugin-no-only-tests' {
 
 declare module '@e18e/eslint-plugin'
 declare module '@eslint-community/eslint-plugin-eslint-comments'
-declare module 'eslint-plugin-command'

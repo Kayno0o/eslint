@@ -14,13 +14,6 @@ export async function regexp(): Promise<TypedFlatConfigItem[]> {
         regexp: pluginRegexp,
       },
       rules: {
-        'no-control-regex': 'error',
-        'no-misleading-character-class': 'error',
-        'no-regex-spaces': 'error',
-        'prefer-regex-literals': 'error',
-        'no-invalid-regexp': 'off',
-        'no-useless-backreference': 'off',
-        'no-empty-character-class': 'off',
         'regexp/confusing-quantifier': 'warn',
         'regexp/control-character-escape': 'error',
         'regexp/match-any': 'error',
