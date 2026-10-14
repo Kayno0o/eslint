@@ -22,6 +22,7 @@ export async function test(): Promise<TypedFlatConfigItem[]> {
       ],
       rules: {
         'test/no-only-tests': 'error',
+        'e18e/prefer-static-regex': 'off',
         'no-unused-expressions': 'off',
       },
     },

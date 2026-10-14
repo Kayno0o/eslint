@@ -24,15 +24,5 @@ export function disables(): TypedFlatConfigItem[] {
         'unused-imports/no-unused-vars': 'off',
       },
     },
-    {
-      name: 'kaynooo/disables/cjs',
-      files: [
-        '**/*.js',
-        '**/*.cjs',
-      ],
-      rules: {
-        'ts/no-require-imports': 'off',
-      },
-    },
   ]
 }

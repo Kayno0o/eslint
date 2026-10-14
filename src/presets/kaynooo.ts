@@ -12,6 +12,7 @@ export function kaynooo(): TypedFlatConfigItem[] {
         'kaynooo/max-statements-per-line': 'error',
         'kaynooo/no-empty-first-last-line': 'error',
         'kaynooo/no-then': 'error',
+        'kaynooo/prefer-ternary-return': 'error',
       },
     },
   ]

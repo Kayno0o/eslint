@@ -10,7 +10,8 @@ const CASES: [rule: string, bad: string, good: string][] = [
   ['ts/no-explicit-any', 'export const a: any = 1\n', 'export const a: unknown = 1\n'],
   ['e18e/prefer-static-regex', 'export function digits(text: string) {\n  return /\\d+/.test(text)\n}\n', 'const DIGITS = /\\d+/\n\nexport function digits(text: string) {\n  return DIGITS.test(text)\n}\n'],
   ['unicorn/prefer-set-has', 'const KINDS = [\'a\', \'b\']\n\nexport function known(kind: string) {\n  return KINDS.includes(kind)\n}\n', 'const KINDS = new Set([\'a\', \'b\'])\n\nexport function known(kind: string) {\n  return KINDS.has(kind)\n}\n'],
-  ['unicorn/prefer-ternary', 'export function label(admin: boolean) {\n  if (admin)\n    return \'admin\'\n  else\n    return \'user\'\n}\n', 'export function label(admin: boolean) {\n  return admin ? \'admin\' : \'user\'\n}\n'],
+  ['unicorn/prefer-ternary', 'export function label(admin: boolean) {\n  let role\n\n  if (admin)\n    role = \'admin\'\n  else\n    role = \'user\'\n\n  return role\n}\n', 'export function label(admin: boolean) {\n  const role = admin ? \'admin\' : \'user\'\n\n  return role\n}\n'],
+  ['kaynooo/prefer-ternary-return', 'export function label(admin: boolean) {\n  if (admin)\n    return \'admin\'\n\n  return \'user\'\n}\n', 'export function label(admin: boolean) {\n  return admin ? \'admin\' : \'user\'\n}\n'],
   ['no-nested-ternary', 'export function sign(n: number) {\n  return n > 0 ? 1 : n < 0 ? -1 : 0\n}\n', 'export function sign(n: number) {\n  return n > 0 ? 1 : 0\n}\n'],
   ['style/multiline-comment-style', '/**\n * Two lines\n * of doc.\n */\nexport const a = 1\n', '// Two lines\n// of doc.\nexport const a = 1\n'],
 ]
@@ -46,6 +47,13 @@ describe('style rules', () => {
       expect(await rulesReported(good)).not.toContain(rule)
     })
   }
+
+  it('fixes a two-way return written with else into a ternary, not into an early return', async () => {
+    const eslint = new ESLint({ fix: true, overrideConfigFile: true, overrideConfig: await defineConfig({}) })
+    const [result] = await eslint.lintText('export function label(admin: boolean) {\n  if (admin)\n    return \'admin\'\n  else\n    return \'user\'\n}\n', { filePath: 'src/probe.ts' })
+
+    expect(result?.output).toBe('export function label(admin: boolean) {\n  return admin ? \'admin\' : \'user\'\n}\n')
+  })
 
   it('ts/require-await reports an async function that neither awaits nor returns a promise', async () => {
     expect(await rulesReported('export async function one() {\n  return 1\n}\n')).toContain('ts/require-await')

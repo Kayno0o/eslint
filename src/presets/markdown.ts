@@ -71,6 +71,7 @@ export async function markdown(): Promise<TypedFlatConfigItem[]> {
         },
       },
       rules: {
+        'e18e/prefer-static-regex': 'off',
         'no-alert': 'off',
         'no-labels': 'off',
         'no-lone-blocks': 'off',
