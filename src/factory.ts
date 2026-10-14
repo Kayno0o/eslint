@@ -2,8 +2,6 @@ import type { Awaitable, FactoryOptions, TypedFlatConfigItem, UserConfig } from 
 import process from 'node:process'
 import { composer } from 'eslint-flat-config-utils'
 import { detectExtensions } from './detect'
-import { a11y, a11yAstro } from './presets/a11y'
-import { astro } from './presets/astro'
 import { comments } from './presets/comments'
 import { disables } from './presets/disables'
 import { e18e } from './presets/e18e'
@@ -11,22 +9,17 @@ import { formatters, formattersEnabled } from './presets/formatters'
 import { ignores } from './presets/ignores'
 import { imports } from './presets/imports'
 import { javascript } from './presets/javascript'
-import { jsdoc } from './presets/jsdoc'
 import { jsonc } from './presets/jsonc'
-import { jsx } from './presets/jsx'
 import { kay } from './presets/kay'
 import { kaynooo, kaynoooTypeAware } from './presets/kaynooo'
 import { markdown } from './presets/markdown'
 import { perfectionist } from './presets/perfectionist'
 import { regexp } from './presets/regexp'
-import { solid } from './presets/solid'
 import { stylistic } from './presets/stylistic'
-import { svelte } from './presets/svelte'
 import { tailwind } from './presets/tailwind'
 import { test } from './presets/test'
 import { toml } from './presets/toml'
 import { typescript } from './presets/typescript'
-import { ui } from './presets/ui'
 import { unicorn } from './presets/unicorn'
 import { yaml } from './presets/yaml'
 
@@ -36,51 +29,26 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   const {
     strict = false,
     tsconfigPath = strict ? 'tsconfig.json' : undefined,
-    astro: enableAstro = false,
+    filesTypeAware = GLOB_TS,
     kay: enableKay = false,
-    solid: enableSolid = false,
-    svelte: enableSvelte = false,
-    a11y: enableA11y = false,
+    tailwind: tailwindOptions = false,
+    formatters: formattersOptions,
     overrides,
   } = options
-
-  const markup = enableAstro || enableSolid || enableSvelte
-  const componentGlobs = [...(enableAstro ? ['**/*.astro'] : []), ...(enableSvelte ? ['**/*.svelte'] : [])]
-  const filesTypeAware = options.filesTypeAware ?? [...GLOB_TS, ...componentGlobs]
-  const formattersOptions = options.formatters ?? (markup ? { css: true } : undefined)
-  const tailwindOptions = options.tailwind ?? markup
 
   const configs: Awaitable<TypedFlatConfigItem[]>[] = [
     ignores(),
     javascript(),
     comments(),
     perfectionist(),
-    jsdoc(),
     imports(),
     e18e(),
     unicorn(),
-    jsx(),
-    typescript({ strict, tsconfigPath, filesTypeAware, componentExts: enableSvelte ? ['svelte'] : [] }),
+    typescript({ strict, tsconfigPath, filesTypeAware }),
     stylistic(),
     regexp(),
     test(),
   ]
-
-  if (enableAstro)
-    configs.push(astro())
-
-  if (enableSolid)
-    configs.push(solid())
-
-  if (enableSvelte)
-    configs.push(svelte())
-
-  if (enableA11y) {
-    configs.push(a11y())
-
-    if (enableAstro)
-      configs.push(a11yAstro())
-  }
 
   const present = detectExtensions(process.cwd(), ['.json', '.json5', '.jsonc', '.yaml', '.yml', '.toml', '.md'])
 
@@ -104,9 +72,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
   // After the stylistic and import rules, which it turns off where the code kay generates around a fence would trip them.
   if (enableKay)
     configs.push(kay())
-
-  if (markup)
-    configs.push(ui())
 
   if (tailwindOptions !== false)
     configs.push(tailwind(tailwindOptions === true ? {} : tailwindOptions))

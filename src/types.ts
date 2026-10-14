@@ -25,23 +25,17 @@ export interface OptionsFormatters {
   /** Enable formatting support for SVG. */
   svg?: 'prettier' | boolean
   /** Enable formatting support for Markdown. */
-  markdown?: 'prettier' | 'dprint' | boolean
+  markdown?: 'prettier' | boolean
   /** Enable formatting support for GraphQL. */
   graphql?: 'prettier' | boolean
-  /** Enable formatting support for Astro. */
-  astro?: 'prettier' | boolean
   /** Custom options for Prettier. */
   prettierOptions?: Record<string, any>
-  /** Custom options for dprint. */
-  dprintOptions?: boolean
-  /** Enable formatting support for Slidev. */
-  slidev?: boolean | { files?: string[] }
 }
 
 export interface TailwindOptions {
   /** Wrap classes onto their own lines instead of collapsing to a single line. */
   multiline?: boolean
-  /** CSS file declaring the Tailwind entry point. */
+  /** CSS file declaring the Tailwind entry point, kay's `src/app.css` by default. */
   entryPoint?: string
 }
 
@@ -50,21 +44,13 @@ export interface FactoryOptions {
   strict?: boolean
   /** Path to the tsconfig used for type-aware linting. */
   tsconfigPath?: string
-  /** Files to lint with type information. Defaults to every TS file, plus `.astro` or `.svelte` when `astro` or `svelte` is on. */
+  /** Files to lint with type information. Defaults to every TS file. */
   filesTypeAware?: string[]
-  /** Enable formatters (CSS, HTML, ...). Defaults to `{ css: true }` when `astro`, `solid` or `svelte` is on. */
+  /** Enable formatters (CSS, HTML, ...). */
   formatters?: OptionsFormatters | boolean
-  /** Enable the Astro preset. */
-  astro?: boolean
   /** Lint the script and server fences of kay's `.kay` components, type-aware under `strict` once `kay check` has written their shadow types. */
   kay?: boolean
-  /** Enable the Solid preset. */
-  solid?: boolean
-  /** Enable the Svelte preset, on components and on `.svelte.ts` rune modules. */
-  svelte?: boolean
-  /** Enable the accessibility preset (`jsx-a11y`) on JSX files, plus `.astro` when `astro` is on. */
-  a11y?: boolean
-  /** Enable the Tailwind preset. Defaults to on when `astro`, `solid` or `svelte` is on. */
+  /** Enable the Tailwind preset. */
   tailwind?: TailwindOptions | boolean
   /** Flat-config fields merged into the trailing overrides item. */
   overrides?: Omit<TypedFlatConfigItem, 'files'>

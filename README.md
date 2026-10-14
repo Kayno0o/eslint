@@ -19,23 +19,15 @@ export default defineConfig({ strict: true })
 }
 ```
 
-## Astro
-
-`defineConfig({ astro: true })` lints `.astro` files through `astro-eslint-parser`. With `strict: true`, `.astro` gets `project` and `tsconfigRootDir` directly rather than `projectService`, since `astro-eslint-parser` only emulates `project` from it, with a `console.warn`, and drops `tsconfigRootDir` doing so.
-
-`astro-eslint-parser` also resolves `typescript` from the current working directory rather than from `tsconfigRootDir`, so lint from your project root. That part is upstream and not something this package works around.
-
-## Svelte
-
-`defineConfig({ svelte: true })` lints components through `svelte-eslint-parser`, with TypeScript in `<script lang="ts">`, and `.svelte.ts` / `.svelte.js` rune modules alongside them. It runs `eslint-plugin-svelte`'s recommended rules, gives component scripts the TypeScript rules, and swaps `prefer-const` for `svelte/prefer-const` in components, so `$props()` destructuring and `$derived` may stay `let`. Like `astro` and `solid`, it turns the Tailwind preset and CSS formatting on by default.
-
-With `strict: true`, components get the type-aware rules too, so they need to be in your tsconfig.
-
 ## Kay
 
 `defineConfig({ kay: true })` lints the script and server fences of kay's `.kay` components, through the `kay/eslint` processor of the app's own `kay`: it lints the TSX `kay check` type-checks a component as, and reports only what falls in a fence's own code, at its `.kay` line, fixes included. The rules the generated code around a fence would trip are off there: `style/indent`, blank lines and padding, import order and adjacency.
 
 With `strict: true`, fences get the type-aware rules through the shadow files `kay check`, `kay dev` or kay's language server write under `.kay/types`, so run one of them before linting, as CI runs `kay check` first.
+
+## Tailwind
+
+`defineConfig({ tailwind: true })` lints Tailwind classes through `eslint-plugin-better-tailwindcss`, against kay's `src/app.css` unless `tailwind: { entryPoint }` names another. It is off by default: kay drops what it reports in `.kay` templates, so on a kay site it only reaches classes in `.ts` files.
 
 ## VSCode
 
@@ -75,7 +67,6 @@ With `strict: true`, fences get the type-aware rules through the shadow files `k
     "javascriptreact",
     "typescript",
     "typescriptreact",
-    "vue",
     "html",
     "markdown",
     "json",
@@ -87,8 +78,6 @@ With `strict: true`, fences get the type-aware rules through the shadow files `k
     "xml",
     "gql",
     "graphql",
-    "astro",
-    "svelte",
     "kay",
     "less",
     "scss",

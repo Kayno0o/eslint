@@ -2,7 +2,7 @@ import type { TailwindOptions, TypedFlatConfigItem } from '../types'
 import { interopDefault } from '../plugins'
 
 export async function tailwind(options: TailwindOptions = {}): Promise<TypedFlatConfigItem[]> {
-  const { multiline = false, entryPoint = 'src/styles/global.css' } = options
+  const { multiline = false, entryPoint = 'src/app.css' } = options
   const pluginTailwind = await interopDefault(import('eslint-plugin-better-tailwindcss'))
 
   return [

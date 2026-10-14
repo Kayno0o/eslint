@@ -77,8 +77,5 @@ export async function formatters(options: OptionsFormatters | boolean = {}): Pro
   if (on(resolved.svg))
     add('svg', ['**/*.svg'], prettier('xml', { plugins: ['@prettier/plugin-xml'] }))
 
-  if (on(resolved.astro))
-    add('astro', ['**/*.astro'], prettier('astro', { plugins: ['prettier-plugin-astro'] }))
-
   return configs
 }

@@ -5,18 +5,15 @@ import { interopDefault } from '../plugins'
 const files = ['**/*.?([cm])ts', '**/*.?([cm])tsx']
 const filesJs = ['**/*.?([cm])js', '**/*.?([cm])jsx']
 const ignoresMarkdownCode = ['**/*.md/**']
-const astroGlob = /\.astro$/
 
 export interface TypescriptOptions {
   strict?: boolean
   tsconfigPath?: string
   filesTypeAware?: string[]
-  /** Component extensions, such as `svelte`, whose scripts get the TypeScript rules as well. */
-  componentExts?: string[]
 }
 
 export async function typescript(options: TypescriptOptions = {}): Promise<TypedFlatConfigItem[]> {
-  const { strict = false, tsconfigPath, filesTypeAware = files, componentExts = [] } = options
+  const { strict = false, tsconfigPath, filesTypeAware = files } = options
   const [parserTs, pluginAntfu, pluginTs] = await Promise.all([
     interopDefault(import('@typescript-eslint/parser')),
     interopDefault(import('eslint-plugin-antfu')),
@@ -47,7 +44,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
     },
     {
       name: 'kaynooo/typescript/rules',
-      files: [...files, ...componentExts.map(ext => `**/*.${ext}`)],
+      files,
       rules: {
         'constructor-super': 'off',
         'getter-return': 'off',
@@ -159,8 +156,6 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
   ]
 
   if (strict && tsconfigPath != null && tsconfigPath !== '') {
-    const astroFilesTypeAware = filesTypeAware.filter(glob => astroGlob.test(glob))
-
     configs.push(
       {
         name: 'kaynooo/typescript/type-aware-parser',
@@ -176,21 +171,6 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
           },
         },
       },
-      // `astro-eslint-parser` warns and falls back to `project: true` on `projectService`, which drops `tsconfigRootDir`: give `.astro` `project` directly instead. Placed before the astro preset's own item, so its `extraFileExtensions` and inner parser still win the merge.
-      ...(astroFilesTypeAware.length === 0
-        ? []
-        : [{
-          name: 'kaynooo/typescript/type-aware-parser/astro',
-          files: astroFilesTypeAware,
-          ignores: ignoresMarkdownCode,
-          languageOptions: {
-            parserOptions: {
-              projectService: false,
-              project: tsconfigPath,
-              tsconfigRootDir: process.cwd(),
-            },
-          },
-        }]),
       {
         name: 'kaynooo/typescript/rules-type-aware',
         files: filesTypeAware,
