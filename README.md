@@ -19,6 +19,8 @@ export default defineConfig({ strict: true })
 }
 ```
 
+`--concurrency 2` speeds up a project without `strict` (kayjs: 20.6s down to 17.4s). Under `strict`, leave it off: each thread builds its own TypeScript program, so on kayjs two threads doubled the CPU time and added 1.4 GB without finishing sooner.
+
 ## Kay
 
 `defineConfig({ kay: true })` lints the script and server fences of kay's `.kay` components, through the `kay/eslint` processor of the app's own `kay`: it lints the TSX `kay check` type-checks a component as, and reports only what falls in a fence's own code, at its `.kay` line, fixes included. The rules the generated code around a fence would trip are off there: `style/indent`, blank lines and padding, import order and adjacency.
