@@ -27,6 +27,7 @@ describe('rule scopes', () => {
   it('lets tests keep their regexes inline', async () => {
     expect(severity(await ruleEntry('src/probe.ts', 'e18e/prefer-static-regex'))).toBe(2)
     expect(severity(await ruleEntry('src/probe.test.ts', 'e18e/prefer-static-regex'))).toBe(0)
+    expect(severity(await ruleEntry('tests-e2e/probe.e2e.ts', 'e18e/prefer-static-regex'))).toBe(0)
   })
 
   it('keeps nullable booleans and objects allowed in conditions under strict', async () => {

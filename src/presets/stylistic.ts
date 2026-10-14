@@ -148,12 +148,10 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
           'error',
           'always-multiline',
         ],
+        // JSDoc stays a block: editors show it on hover.
         'style/multiline-comment-style': [
           'error',
           'separate-lines',
-          {
-            checkJSDoc: true,
-          },
         ],
         'style/new-parens': 'error',
         'style/no-extra-parens': [

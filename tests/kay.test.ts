@@ -32,6 +32,9 @@ let a = 1;
 if (b) {
 const c = a
 }
+export function digits(text: string) {
+  return /\\d+/.test(text)
+}
 `
 
 const cwd = process.cwd()
@@ -105,5 +108,11 @@ describe('kay preset', () => {
     expect(rules).not.toContain('import/newline-after-import')
     // Only the component: the shadow tree beside it holds the same code.
     expect(rules.filter(rule => rule === 'prefer-const')).toHaveLength(1)
+  })
+
+  it('lets a component keep its regexes inline, having no module scope to move them to', async () => {
+    const { rules } = await lintComponent()
+
+    expect(rules).not.toContain('e18e/prefer-static-regex')
   })
 })

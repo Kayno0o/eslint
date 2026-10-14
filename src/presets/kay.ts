@@ -50,6 +50,8 @@ export async function kay(): Promise<TypedFlatConfigItem[]> {
       name: 'kaynooo/kay/rules',
       files: GLOB_KAY_BLOCK,
       rules: {
+        // A component has no module scope to move a regex to.
+        'e18e/prefer-static-regex': 'off',
         'import/first': 'off',
         'import/newline-after-import': 'off',
         'import/no-duplicates': 'off',

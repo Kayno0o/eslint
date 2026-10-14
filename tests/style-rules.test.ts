@@ -13,7 +13,7 @@ const CASES: [rule: string, bad: string, good: string][] = [
   ['unicorn/prefer-ternary', 'export function label(admin: boolean) {\n  let role\n\n  if (admin)\n    role = \'admin\'\n  else\n    role = \'user\'\n\n  return role\n}\n', 'export function label(admin: boolean) {\n  const role = admin ? \'admin\' : \'user\'\n\n  return role\n}\n'],
   ['kaynooo/prefer-ternary-return', 'export function label(admin: boolean) {\n  if (admin)\n    return \'admin\'\n\n  return \'user\'\n}\n', 'export function label(admin: boolean) {\n  return admin ? \'admin\' : \'user\'\n}\n'],
   ['no-nested-ternary', 'export function sign(n: number) {\n  return n > 0 ? 1 : n < 0 ? -1 : 0\n}\n', 'export function sign(n: number) {\n  return n > 0 ? 1 : 0\n}\n'],
-  ['style/multiline-comment-style', '/**\n * Two lines\n * of doc.\n */\nexport const a = 1\n', '// Two lines\n// of doc.\nexport const a = 1\n'],
+  ['style/multiline-comment-style', '/*\n * Two lines\n * of note.\n */\nexport const a = 1\n', '// Two lines\n// of note.\nexport const a = 1\n'],
 ]
 
 const dir = mkdtempSync(join(tmpdir(), 'kaynooo-style-rules-'))
@@ -53,6 +53,10 @@ describe('style rules', () => {
     const [result] = await eslint.lintText('export function label(admin: boolean) {\n  if (admin)\n    return \'admin\'\n  else\n    return \'user\'\n}\n', { filePath: 'src/probe.ts' })
 
     expect(result?.output).toBe('export function label(admin: boolean) {\n  return admin ? \'admin\' : \'user\'\n}\n')
+  })
+
+  it('style/multiline-comment-style keeps a JSDoc block, which editors show on hover', async () => {
+    expect(await rulesReported('/**\n * Two lines\n * of doc.\n */\nexport const a = 1\n')).not.toContain('style/multiline-comment-style')
   })
 
   it('ts/require-await reports an async function that neither awaits nor returns a promise', async () => {

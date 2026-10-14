@@ -17,6 +17,7 @@ export async function test(): Promise<TypedFlatConfigItem[]> {
         '**/__tests__/**/*.?([cm])[jt]s?(x)',
         '**/*.spec.?([cm])[jt]s?(x)',
         '**/*.test.?([cm])[jt]s?(x)',
+        '**/*.e2e.?([cm])[jt]s?(x)',
         '**/*.bench.?([cm])[jt]s?(x)',
         '**/*.benchmark.?([cm])[jt]s?(x)',
       ],
