@@ -18,12 +18,15 @@ export function formattersEnabled(options: OptionsFormatters | boolean | undefin
   return Object.values(options).some(Boolean)
 }
 
+function resolveFormatters(options: OptionsFormatters | boolean): OptionsFormatters {
+  if (options === true)
+    return { css: true, html: true, markdown: true }
+
+  return options === false ? {} : options
+}
+
 export async function formatters(options: OptionsFormatters | boolean = {}): Promise<TypedFlatConfigItem[]> {
-  const resolved: OptionsFormatters = options === true
-    ? { css: true, html: true, markdown: true }
-    : options === false
-      ? {}
-      : options
+  const resolved = resolveFormatters(options)
 
   const pluginFormat = await interopDefault(import('eslint-plugin-format'))
 

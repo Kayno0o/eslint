@@ -148,6 +148,13 @@ export async function stylistic(): Promise<TypedFlatConfigItem[]> {
           'error',
           'always-multiline',
         ],
+        'style/multiline-comment-style': [
+          'error',
+          'separate-lines',
+          {
+            checkJSDoc: true,
+          },
+        ],
         'style/new-parens': 'error',
         'style/no-extra-parens': [
           'error',

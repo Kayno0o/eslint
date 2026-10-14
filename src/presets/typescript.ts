@@ -1,3 +1,4 @@
+import type { ESLint } from 'eslint'
 import type { TypedFlatConfigItem } from '../types'
 import process from 'node:process'
 import { interopDefault } from '../plugins'
@@ -22,7 +23,8 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
   const configs: TypedFlatConfigItem[] = [
     {
       name: 'kaynooo/typescript/setup',
-      plugins: { antfu: pluginAntfu, ts: pluginTs },
+      // typescript-eslint's plugin type is not assignable to ESLint 10's Plugin, though the plugin works as one.
+      plugins: { antfu: pluginAntfu, ts: pluginTs as unknown as ESLint.Plugin },
     },
     {
       name: 'kaynooo/typescript/parser',
@@ -77,6 +79,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
             allowInterfaces: 'always',
           },
         ],
+        'ts/no-explicit-any': 'error',
         'ts/no-extra-non-null-assertion': 'error',
         'ts/no-misused-new': 'error',
         'ts/no-namespace': 'error',
@@ -183,6 +186,7 @@ export async function typescript(options: TypescriptOptions = {}): Promise<Typed
           'ts/no-unsafe-member-access': 'error',
           'ts/no-unsafe-return': 'error',
           'ts/promise-function-async': 'error',
+          'ts/require-await': 'error',
           'ts/restrict-plus-operands': 'error',
           'ts/restrict-template-expressions': 'error',
           'ts/return-await': [

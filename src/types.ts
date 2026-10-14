@@ -1,10 +1,10 @@
-import type { Linter } from 'eslint'
+import type { ESLint, Linter } from 'eslint'
 
 export type Awaitable<T> = T | Promise<T>
 
 export type TypedFlatConfigItem = Omit<Linter.Config, 'plugins'> & {
   name?: string
-  plugins?: Record<string, any>
+  plugins?: Record<string, ESLint.Plugin>
 }
 
 export type Rules = Partial<Linter.RulesRecord>
@@ -25,7 +25,7 @@ export interface OptionsFormatters {
   /** Enable formatting support for GraphQL. */
   graphql?: 'prettier' | boolean
   /** Custom options for Prettier. */
-  prettierOptions?: Record<string, any>
+  prettierOptions?: Record<string, unknown>
 }
 
 export interface TailwindOptions {

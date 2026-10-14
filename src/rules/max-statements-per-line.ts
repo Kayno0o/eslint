@@ -1,5 +1,7 @@
 import type { Rule } from 'eslint'
 
+const LEADING_SPACE = /^(\s*)/
+
 const LISTENING_NODES = [
   'BreakStatement',
   'ClassDeclaration',
@@ -62,7 +64,7 @@ const rule: Rule.RuleModule = {
         return
 
       const node = firstExtra
-      const indent = sourceCode.lines[node.loc!.start.line - 1].match(/^(\s*)/)?.[1] ?? ''
+      const indent = sourceCode.lines[node.loc!.start.line - 1].match(LEADING_SPACE)?.[1] ?? ''
 
       context.report({
         node,
@@ -84,7 +86,7 @@ const rule: Rule.RuleModule = {
             if (!beforeElse)
               return null
 
-            const ifIndent = sourceCode.lines[(node.parent?.loc?.start.line ?? 1) - 1].match(/^(\s*)/)?.[1] ?? ''
+            const ifIndent = sourceCode.lines[(node.parent?.loc?.start.line ?? 1) - 1].match(LEADING_SPACE)?.[1] ?? ''
 
             return fixer.replaceTextRange([beforeElse.range[1], tokenBefore.range[0]], `\n${ifIndent}`)
           }

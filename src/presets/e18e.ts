@@ -22,6 +22,7 @@ export async function e18e(): Promise<TypedFlatConfigItem[]> {
         'e18e/prefer-date-now': 'error',
         'e18e/prefer-regex-test': 'error',
         'e18e/prefer-array-some': 'error',
+        'e18e/prefer-static-regex': 'error',
         'e18e/prefer-string-fromcharcode': 'error',
         'e18e/prefer-slice-over-split-index': 'error',
         'e18e/prefer-throw-if-no-entry': 'error',
