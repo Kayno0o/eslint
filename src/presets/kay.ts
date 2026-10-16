@@ -46,16 +46,19 @@ export async function kay(): Promise<TypedFlatConfigItem[]> {
       languageOptions: { parser: shadowParser(parserTs) },
     },
     {
-      // A fence's code sits inside generated code: a server fence in the `load` function, imports of both fences hoisted together beside kay's own.
+      // A fence's code, and a template expression, sit inside generated code, and a component has no module scope to move a regex to: a slot's params and a loop's callbacks are wrapped in parentheses the template never wrote; a server fence in the `load` function, imports of both fences hoisted together beside kay's own; a handler stays on the one line of its attribute list, and with indent off the autofix of a split could not lay it out; a prop with a default is read as a ternary, which nests the template's own.
       name: 'kaynooo/kay/rules',
       files: GLOB_KAY_BLOCK,
       rules: {
-        // A component has no module scope to move a regex to.
+        'antfu/if-newline': 'off',
         'e18e/prefer-static-regex': 'off',
         'import/first': 'off',
         'import/newline-after-import': 'off',
         'import/no-duplicates': 'off',
+        'kaynooo/max-statements-per-line': 'off',
+        'no-nested-ternary': 'off',
         'perfectionist/sort-imports': 'off',
+        'style/arrow-parens': 'off',
         'style/indent': 'off',
         'style/no-multiple-empty-lines': 'off',
         'style/padding-line-between-statements': 'off',
