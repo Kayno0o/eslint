@@ -8,6 +8,7 @@ import { defineConfig } from '../src/factory'
 
 // Stands in for kay's own: hands the component through as TSX, and marks every block its parser reads.
 const STUB = `export const processor = {
+  meta: { name: 'kay', version: '__VERSION__' },
   supportsAutofix: true,
   preprocess: text => [{ text, filename: 'kay.tsx' }],
   postprocess: messages => messages.flat(),
@@ -41,7 +42,7 @@ const cwd = process.cwd()
 const dirs: string[] = []
 
 /** A project depending on a stub `kay`, its component linted under the kay preset. */
-async function lintComponent(): Promise<{ rules: string[], parsed: string[] }> {
+async function lintComponent(version = '1.70.0'): Promise<{ rules: string[], parsed: string[] }> {
   const dir = mkdtempSync(join(tmpdir(), 'kaynooo-kay-'))
   const kay = join(dir, 'node_modules', 'kay')
 
@@ -51,7 +52,7 @@ async function lintComponent(): Promise<{ rules: string[], parsed: string[] }> {
   mkdirSync(join(dir, '.kay', 'types'), { recursive: true })
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'app', type: 'module' }))
   writeFileSync(join(kay, 'package.json'), JSON.stringify({ name: 'kay', type: 'module', exports: { './eslint': './eslint.js' } }))
-  writeFileSync(join(kay, 'eslint.js'), STUB)
+  writeFileSync(join(kay, 'eslint.js'), STUB.replace('__VERSION__', version))
   writeFileSync(join(dir, 'page.kay'), COMPONENT)
   writeFileSync(join(dir, '.kay', 'types', 'page.kay.tsx'), COMPONENT)
 
@@ -104,10 +105,14 @@ describe('kay preset', () => {
   it('leaves the generated shadow tree alone, and the rules the code around a fence trips', async () => {
     const { rules } = await lintComponent()
 
-    expect(rules).not.toContain('style/indent')
     expect(rules).not.toContain('import/newline-after-import')
     // Only the component: the shadow tree beside it holds the same code.
     expect(rules.filter(rule => rule === 'prefer-const')).toHaveLength(1)
+  })
+
+  it('lints the indentation of a fence under a kay that reads it, and leaves it off under an older one', async () => {
+    expect((await lintComponent('1.70.0')).rules).toContain('style/indent')
+    expect((await lintComponent('1.69.3')).rules).not.toContain('style/indent')
   })
 
   it('lets a component keep its regexes inline, having no module scope to move them to', async () => {

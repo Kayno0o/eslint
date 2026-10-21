@@ -9,7 +9,7 @@ import { interopDefault } from '../plugins'
 export const GLOB_KAY_BLOCK = ['**/*.kay/*.tsx']
 
 interface KayEslint {
-  processor: NonNullable<TypedFlatConfigItem['processor']>
+  processor: NonNullable<TypedFlatConfigItem['processor']> & { meta?: { version?: string } }
   shadowParser: <Parser>(parser: Parser) => NonNullable<NonNullable<TypedFlatConfigItem['languageOptions']>['parser']>
 }
 
@@ -20,6 +20,13 @@ function resolveKay(): string {
   catch {
     throw new Error(`kay: true lints .kay files through the app's own kay, which ${process.cwd()} lacks: depend on kay 0.14 or later under the name kay, and lint from the project root`)
   }
+}
+
+// kay 1.70 reads a fence's lines at the indentation the generated code gives them, and judges nothing else with the indentation rule; an older kay would have every line reported.
+function readsIndentation(version: string | undefined): boolean {
+  const [major = 0, minor = 0] = (version ?? '').split('.').map(Number)
+
+  return major > 1 || (major === 1 && minor >= 70)
 }
 
 export async function kay(): Promise<TypedFlatConfigItem[]> {
@@ -46,7 +53,7 @@ export async function kay(): Promise<TypedFlatConfigItem[]> {
       languageOptions: { parser: shadowParser(parserTs) },
     },
     {
-      // A fence's code, and a template expression, sit inside generated code, and a component has no module scope to move a regex to: a slot's params and a loop's callbacks are wrapped in parentheses the template never wrote; a server fence in the `load` function, imports of both fences hoisted together beside kay's own; a handler stays on the one line of its attribute list, and with indent off the autofix of a split could not lay it out; a prop with a default is read as a ternary, which nests the template's own.
+      // A fence's code, and a template expression, sit inside generated code, and a component has no module scope to move a regex to: a slot's params and a loop's callbacks are wrapped in parentheses the template never wrote; a server fence in the `load` function, imports of both fences hoisted together beside kay's own; a handler stays on the one line of its attribute list; a prop with a default is read as a ternary, which nests the template's own.
       name: 'kaynooo/kay/rules',
       files: GLOB_KAY_BLOCK,
       rules: {
@@ -59,7 +66,7 @@ export async function kay(): Promise<TypedFlatConfigItem[]> {
         'no-nested-ternary': 'off',
         'perfectionist/sort-imports': 'off',
         'style/arrow-parens': 'off',
-        'style/indent': 'off',
+        ...readsIndentation(processor.meta?.version) ? {} : { 'style/indent': 'off' },
         'style/no-multiple-empty-lines': 'off',
         'style/padding-line-between-statements': 'off',
       },
