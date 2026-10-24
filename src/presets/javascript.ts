@@ -305,6 +305,8 @@ export async function javascript(): Promise<TypedFlatConfigItem[]> {
           {
             argsIgnorePattern: '^_',
             caughtErrors: 'none',
+            // A `using` binding exists for its dispose at scope end, so it is never unused.
+            ignoreUsingDeclarations: true,
           },
         ],
         'use-isnan': [

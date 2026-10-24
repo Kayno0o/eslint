@@ -30,4 +30,11 @@ describe('javascript files', () => {
 
     expect(result?.messages.map(message => message.ruleId)).toContain('unused-imports/no-unused-vars')
   })
+
+  it('does not report a using or await using binding that is never read', async () => {
+    const eslint = await eslintFor({})
+    const [result] = await eslint.lintText('declare function hold(): Disposable & AsyncDisposable\n\nexport async function probe(): Promise<void> {\n  using held = hold()\n  await using later = hold()\n}\n', { filePath: 'src/probe.ts' })
+
+    expect(result?.messages.map(message => message.ruleId)).not.toContain('unused-imports/no-unused-vars')
+  })
 })
