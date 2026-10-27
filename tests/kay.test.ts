@@ -120,4 +120,27 @@ describe('kay preset', () => {
 
     expect(rules).not.toContain('e18e/prefer-static-regex')
   })
+
+  it('applies the config items kay asks for its tests, and runs on a kay without any', async () => {
+    // One project per stub: the preset imports the stub by path, which the module cache keeps.
+    async function ruleOf(stub: string): Promise<unknown> {
+      const dir = mkdtempSync(join(tmpdir(), 'kaynooo-kay-'))
+      const kay = join(dir, 'node_modules', 'kay')
+
+      dirs.push(dir)
+      mkdirSync(kay, { recursive: true })
+      writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'app', type: 'module' }))
+      writeFileSync(join(kay, 'package.json'), JSON.stringify({ name: 'kay', type: 'module', exports: { './eslint': './eslint.js' } }))
+      writeFileSync(join(kay, 'eslint.js'), `${STUB.replace('__VERSION__', '1.70.0')}${stub}`)
+      process.chdir(dir)
+
+      const eslint = new ESLint({ cwd: dir, overrideConfigFile: true, overrideConfig: await defineConfig({ kay: true, tailwind: false, strict: true }) })
+      const config = await eslint.calculateConfigForFile(join(dir, 'tests', 'a.test.ts')) as { rules: Record<string, unknown> }
+
+      return config.rules['ts/await-thenable']
+    }
+
+    expect(await ruleOf('')).toEqual([2])
+    expect(await ruleOf(`export const testRules = [{ files: ['**/*.test.ts'], rules: { 'ts/await-thenable': 'off' } }]`)).toEqual([0])
+  })
 })

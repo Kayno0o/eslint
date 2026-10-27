@@ -10,6 +10,8 @@ export const GLOB_KAY_BLOCK = ['**/*.kay/*.tsx']
 
 interface KayEslint {
   processor: NonNullable<TypedFlatConfigItem['processor']> & { meta?: { version?: string } }
+  // Config items kay asks of the app's files outside its components, such as the rules its test matchers trip.
+  testRules?: TypedFlatConfigItem[]
   shadowParser: <Parser>(parser: Parser) => NonNullable<NonNullable<TypedFlatConfigItem['languageOptions']>['parser']>
 }
 
@@ -32,7 +34,7 @@ function readsIndentation(version: string | undefined): boolean {
 export async function kay(): Promise<TypedFlatConfigItem[]> {
   // From the app rather than this package, which does not depend on kay: the app's own `kay` compiles its components.
   const entry = resolveKay()
-  const [{ processor, shadowParser }, parserTs] = await Promise.all([
+  const [{ processor, shadowParser, testRules = [] }, parserTs] = await Promise.all([
     import(pathToFileURL(entry).href) as Promise<KayEslint>,
     interopDefault(import('@typescript-eslint/parser')),
   ])
@@ -71,5 +73,6 @@ export async function kay(): Promise<TypedFlatConfigItem[]> {
         'style/padding-line-between-statements': 'off',
       },
     },
+    ...testRules,
   ]
 }

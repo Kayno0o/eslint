@@ -27,6 +27,8 @@ export default defineConfig({ strict: true })
 
 With `strict: true`, fences get the type-aware rules through the shadow files `kay check`, `kay dev` or kay's language server write under `.kay/types`, so run one of them before linting, as CI runs `kay check` first.
 
+A kay that exports `testRules` from `kay/eslint` gets those config items appended after its own, for the rules its test matchers trip in an app's test files.
+
 ## Tailwind
 
 `defineConfig({ tailwind: true })` lints Tailwind classes through `eslint-plugin-better-tailwindcss`, against kay's `src/app.css` unless `tailwind: { entryPoint }` names another. It is off by default: kay drops what it reports in `.kay` templates, so on a kay site it only reaches classes in `.ts` files.
