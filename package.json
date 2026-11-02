@@ -2,7 +2,7 @@
   "name": "@kaynooo/eslint",
   "type": "module",
   "version": "7.1.4",
-  "author": "Kaynooo <https://git.kaynooo.fr/kaynooo>",
+  "author": "Kaynooo <contact@kaynooo.fr> (https://git.kaynooo.fr/kaynooo)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   },
   "publishConfig": {
     "registry": "https://git.kaynooo.fr/api/packages/kaynooo/npm/",
-    "access": "restricted"
+    "access": "public"
   },
   "exports": {
     ".": {
