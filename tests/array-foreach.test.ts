@@ -66,6 +66,65 @@ tester.run('array-foreach', rule, {
       output: 'createEffect(on(() => data.latest, () => { for (const reset of resets) { reset() } }))',
     },
 
+    // a return of the callback skips an item; as a loop's it would leave the function → report without autofix
+    {
+      code: 'function f(arr) { arr.forEach(x => { if (x) return; use(x) }) }',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+
+    // a return nested in a switch or a loop of the callback is the callback's too
+    {
+      code: 'arr.forEach(x => { switch (x) { case 1: return } })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+
+    // a return of a nested function stays that function's → still fixed
+    {
+      code: 'arr.forEach(x => { use(() => { return x }) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'for (const x of arr) { use(() => { return x }) }',
+    },
+
+    // an async callback runs the items at once; a loop would await each in turn
+    {
+      code: 'arr.forEach(async x => { await use(x) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+
+    // a `function` callback's own this and arguments, also through a nested arrow
+    {
+      code: 'arr.forEach(function (x) { this.use(x) }, ctx)',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+    {
+      code: 'arr.forEach(function (x) { later(() => use(arguments)) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+
+    // a thisArg the loop would drop
+    {
+      code: 'arr.forEach(x => { use(x) }, make())',
+      errors: [{ messageId: 'preferForOf' }],
+      output: null,
+    },
+
+    // this inside a nested function, or under an arrow callback, keeps its meaning → still fixed
+    {
+      code: 'arr.forEach(function (x) { use(function () { return this }) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'for (const x of arr) { use(function () { return this }) }',
+    },
+    {
+      code: 'arr.forEach(x => { this.use(x) })',
+      errors: [{ messageId: 'preferForOf' }],
+      output: 'for (const x of arr) { this.use(x) }',
+    },
+
     // not in statement position (call argument) → report without autofix
     {
       code: 'wrap(arr.forEach(x => use(x)))',
