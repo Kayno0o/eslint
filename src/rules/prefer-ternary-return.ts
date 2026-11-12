@@ -1,7 +1,8 @@
 import type { Rule } from 'eslint'
 import type { Expression, ReturnStatement, Statement } from 'estree'
 
-const MAX_LINE = 120
+// The widest line a ternary may leave, shared with the unicorn/prefer-ternary reports the unicorn preset keeps.
+export const MAX_LINE = 120
 
 // Operands a ternary would need parentheses around, or that would nest one ternary in another.
 const UNSAFE_OPERANDS = new Set(['ArrowFunctionExpression', 'AssignmentExpression', 'ConditionalExpression', 'SequenceExpression', 'YieldExpression'])
