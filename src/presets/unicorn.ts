@@ -1,4 +1,4 @@
-import type { ESLint, Rule, SourceCode } from 'eslint'
+import type { AST, ESLint, Rule, SourceCode } from 'eslint'
 import type { Node, Statement } from 'estree'
 import type { TypedFlatConfigItem } from '../types'
 import { interopDefault, libVersion } from '../plugins'
@@ -60,23 +60,27 @@ function isEarlyReturn(node: Node): boolean {
 
 const branchBody = (branch: Statement): Statement => branch.type === 'BlockStatement' && branch.body.length === 1 ? branch.body[0] : branch
 
-/** For a report with no fix to dry-run: the width of the one-line ternary keeping once what both branches share at their start and end. */
-function mergedWidth(sourceCode: SourceCode, node: Node): number {
+const spanWidth = (tokens: AST.Token[], from: number, to: number): number => from >= to ? 0 : tokens[to - 1].range[1] - tokens[from].range[0]
+
+/** For a report with no fix to dry-run: the width of the one-line ternary keeping once the tokens both branches share at their start and end. */
+export function mergedWidth(sourceCode: SourceCode, node: Node): number {
   if (node.type !== 'IfStatement' || node.alternate == null)
     return 0
 
-  const a = sourceCode.getText(branchBody(node.consequent))
-  const b = sourceCode.getText(branchBody(node.alternate))
+  const a = sourceCode.getTokens(branchBody(node.consequent))
+  const b = sourceCode.getTokens(branchBody(node.alternate))
   let start = 0
   let end = 0
 
-  while (start < a.length && start < b.length && a[start] === b[start])
+  while (start < a.length && start < b.length && a[start]?.value === b[start]?.value)
     start++
 
-  while (end < a.length - start && end < b.length - start && a[a.length - 1 - end] === b[b.length - 1 - end])
+  while (end < a.length - start && end < b.length - start && a[a.length - 1 - end]?.value === b[b.length - 1 - end]?.value)
     end++
 
-  return node.loc!.start.column + start + sourceCode.getText(node.test).length + ' ? '.length + (a.length - start - end) + ' : '.length + (b.length - start - end) + end
+  const operands = spanWidth(a, start, a.length - end) + spanWidth(b, start, b.length - end)
+
+  return node.loc!.start.column + spanWidth(a, 0, start) + sourceCode.getText(node.test).length + ' ? '.length + operands + ' : '.length + spanWidth(a, a.length - end, a.length)
 }
 
 // Since unicorn 79, prefer-ternary also reports `if (c) return a` followed by `return b`, which kaynooo/prefer-ternary-return covers, and merges an if/else into one call however long the result: drop those reports and the ones whose ternary would pass MAX_LINE.
