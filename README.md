@@ -54,7 +54,7 @@ A kay that exports `testRules` from `kay/eslint` gets those config items appende
   // Silent the stylistic rules in you IDE, but still auto fix them
   "eslint.rules.customizations": [
     { "rule": "style/*", "severity": "off" },
-    { "rule": "format/*", "severity": "off" },
+
     { "rule": "*-indent", "severity": "off" },
     { "rule": "*-spacing", "severity": "off" },
     { "rule": "*-spaces", "severity": "off" },
@@ -71,22 +71,12 @@ A kay that exports `testRules` from `kay/eslint` gets those config items appende
     "javascriptreact",
     "typescript",
     "typescriptreact",
-    "html",
     "markdown",
     "json",
     "jsonc",
     "yaml",
     "toml",
-    "css",
-    "tailwindcss",
-    "xml",
-    "gql",
-    "graphql",
     "kay",
-    "less",
-    "scss",
-    "pcss",
-    "postcss",
     "github-actions-workflow"
   ]
 }

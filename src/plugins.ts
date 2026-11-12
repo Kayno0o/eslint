@@ -1,4 +1,3 @@
-import type { Linter } from 'eslint'
 import type { Awaitable } from './types'
 import globals from 'globals'
 
@@ -13,22 +12,4 @@ export const combinedGlobals = {
   ...globals.browser,
   ...globals.node,
   ...globals.es2021,
-}
-
-/** A no-op parser used to hand formatting off to the formatter rules. */
-export const parserPlain: Linter.Parser = {
-  meta: { name: 'parser-plain' },
-  parseForESLint: (code: string) => ({
-    ast: {
-      body: [],
-      comments: [],
-      loc: { end: code.length, start: 0 },
-      range: [0, code.length],
-      tokens: [],
-      type: 'Program',
-    },
-    services: { isPlain: true },
-    scopeManager: null,
-    visitorKeys: { Program: [] },
-  }),
 }

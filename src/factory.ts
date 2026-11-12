@@ -5,7 +5,6 @@ import { detectExtensions } from './detect'
 import { comments } from './presets/comments'
 import { disables } from './presets/disables'
 import { e18e } from './presets/e18e'
-import { formatters, formattersEnabled } from './presets/formatters'
 import { ignores } from './presets/ignores'
 import { imports } from './presets/imports'
 import { javascript } from './presets/javascript'
@@ -32,7 +31,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
     filesTypeAware = GLOB_TS,
     kay: enableKay = false,
     tailwind: tailwindOptions = false,
-    formatters: formattersOptions,
     overrides,
   } = options
 
@@ -63,9 +61,6 @@ export async function defineConfig(options: FactoryOptions = {}, ...userConfigs:
 
   if (present.has('.md'))
     configs.push(markdown())
-
-  if (formattersEnabled(formattersOptions))
-    configs.push(formatters(formattersOptions))
 
   configs.push(disables(), kaynooo())
 
